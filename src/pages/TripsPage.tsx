@@ -66,8 +66,8 @@ export function TripsPage() {
         <p className="eyebrow">Upcoming departures</p>
         <h1 className="mt-2 text-3xl sm:text-4xl">Explore trips</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
-          Every car seats exactly three travellers plus your host. Filter by the weekend you are
-          free, then claim a seat — or start a new car if none of these fit.
+          Every car has three traveller seats and one local host. Filter by the weekend you are free,
+          then claim a seat — or request a date if none of these fit.
         </p>
       </header>
 
@@ -131,7 +131,7 @@ export function TripsPage() {
             <button
               type="button"
               onClick={() => setParams(sort !== 'soonest' ? { sort } : {}, { replace: true })}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-coral-dark underline-offset-4 transition hover:underline"
+              className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold text-coral-dark underline-offset-4 transition hover:underline"
             >
               <RotateCcw className="size-3.5" aria-hidden="true" />
               Reset
@@ -178,7 +178,7 @@ export function TripsPage() {
                 </button>
                 <Link to="/start-trip" className="btn btn-primary">
                   <CalendarPlus className="size-4" aria-hidden="true" />
-                  Start a trip
+                  Request a date
                 </Link>
               </>
             }
@@ -191,13 +191,13 @@ export function TripsPage() {
           <div>
             <h2 className="text-lg">None of these dates work?</h2>
             <p className="mt-1 text-sm leading-relaxed text-charcoal/75">
-              Start a car on your own date. Other travellers can see it and claim the other two
-              seats, and you only pay the deposit until it fills.
+              Request your own date. Other travellers can see it and claim the remaining seats, and you
+              only pay the deposit until it fills.
             </p>
           </div>
           <Link to="/start-trip" className="btn btn-forest shrink-0">
             <CalendarPlus className="size-4" aria-hidden="true" />
-            Start a trip
+            Request a date
           </Link>
         </div>
       )}

@@ -4,7 +4,7 @@ import { CalendarPlus, Compass, House, Ticket } from 'lucide-react'
 const items = [
   { to: '/', label: 'Home', Icon: House, end: true },
   { to: '/trips', label: 'Explore', Icon: Compass, end: false },
-  { to: '/start-trip', label: 'Start trip', Icon: CalendarPlus, end: false },
+  { to: '/start-trip', label: 'Request', Icon: CalendarPlus, end: false },
   { to: '/my-trips', label: 'My trips', Icon: Ticket, end: false },
 ]
 
@@ -21,7 +21,7 @@ export function MobileNav() {
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold transition ${
+                `flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition ${
                   isActive ? 'text-coral' : 'text-sage'
                 }`
               }

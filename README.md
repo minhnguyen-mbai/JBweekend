@@ -2,12 +2,12 @@
 
 **Three seats. One local host. A different side of Johor.**
 
-A working front-end prototype for a Singapore-based group-booking product. Each trip is one
-four-seat car: your local host drives, and exactly three traveller seats are for sale. A shared
-departure is confirmed the moment the third seat is claimed.
+Front-end for a Singapore-based group-booking product. Each trip is one car: a local host
+drives and guides, and exactly three traveller seats are sold. A shared departure confirms
+the moment the third seat is claimed.
 
-This is a **prototype**. There is no backend and no payment gateway — checkout is simulated and
-booking state is persisted to `localStorage` in your browser.
+Payment is arranged manually — there is no gateway and no card details are collected.
+Bookings are held in the browser via `localStorage`.
 
 ## Getting started
 
@@ -16,51 +16,65 @@ npm install
 npm run dev
 ```
 
-Then open the printed local URL.
-
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Vite dev server |
 | `npm run build` | Type-check (`tsc -b`) then production build |
 | `npm run preview` | Serve the production build |
 | `npm run lint` | ESLint over the whole project |
+| `npm run typecheck` | `tsc -b` only |
 
 ## Routes
 
 | Route | Page |
 | --- | --- |
-| `/` | Homepage — upcoming departures first, then how shared trips work |
-| `/trips` | Explore trips — search, filter chips, sorting, empty state |
-| `/trips/:slug` | Trip detail — departure picker, seat progress, itinerary, sticky booking panel |
-| `/book/:departureId` | Four-step booking flow with simulated deposit checkout |
-| `/start-trip` | Four-step wizard that creates a new open departure |
-| `/my-trips` | Awaiting group, Confirmed, Waitlist, Past trips |
-| `/safety` | Trust, verification, code of conduct, reporting |
+| `/` | Homepage — upcoming departures first |
+| `/trips` | Explore departures: search, filter chips, sorting, empty state |
+| `/trips/:slug` | Route detail: key facts above the fold, sticky booking panel, itinerary |
+| `/book/:departureId` | Two-step checkout: your details → review and confirm |
+| `/start-trip` | Request a date, which creates a new open departure |
+| `/my-trips` | Awaiting group · Confirmed · Past or cancelled |
+| `/safety` | What we do today, and what is still being built |
 
-## The three-seat mechanic
+## Booking state
 
-`src/lib/seats.ts` holds the rules. A departure's status always follows its seat count:
+`src/lib/booking.ts` is the single source of truth for availability and every amount shown
+anywhere in the app. Nothing else computes a price.
 
-| Seats claimed | Status | Primary CTA |
+`quoteFor(tour, departure, kind, seats)` returns `dueToday`, `fareTotal`,
+`balanceAfterConfirmation`, `fillsCar` and `resultingStatus`:
+
+| Case | Due today | Booking status |
 | --- | --- | --- |
-| 0–1 of 3 | `open` | Claim a seat |
-| 2 of 3 | `almost_full` | Claim the final seat |
-| 3 of 3 | `confirmed` | Join waitlist |
-| Whole car | `private` | Book the whole car |
+| Shared, seats remain after booking | `seats × S$30` deposit | `awaiting_group` |
+| Shared, booking takes the last seats | `seats × sharedSeatPrice` | `confirmed` |
+| Private | `privateCarPrice` | `confirmed` |
+| Waitlist | nothing | `waitlisted` |
 
-Shared bookings hold a refundable **S$30 deposit per seat**; the balance falls due once the car
-fills. Confirmation closes two days before departure at 8:00 PM. If the car does not fill, the
-traveller chooses a refund, another date, or a private upgrade.
+Filling a car also flips every existing `awaiting_group` booking on it to `confirmed`; their
+outstanding balance is then settled through the manual payment process. `paymentStatus`
+stays `pending` until a payment is actually recorded, so the UI says "Amount due today"
+rather than "Paid".
 
-A **private booking is its own car**, so it never consumes seats from a shared departure.
+A private booking creates its own car, so it never consumes shared seats, and private cars
+are excluded from public browsing.
+
+## What the price covers
+
+Included: the car and transport within Johor, the local host who drives and guides, pick-up
+and drop-off at JB CIQ, the curated itinerary, and trip coordination.
+
+Not included: food and drinks, attraction and activity tickets, massage, shopping and any
+optional activities. These are paid as you go. Customers cross the Singapore–Johor border
+independently; JB Weekend does not pick up in Singapore.
 
 ## Project structure
 
 ```
 src/
   components/   Reusable UI — SeatProgress, TripCard, BookingPanel, Modal, …
-  data/         Typed mock data: tours, departures, hosts, reviews, FAQs
-  lib/          Seat rules, date/money formatting, filtering, validation, clipboard, ICS
+  data/         Typed mock data: tours, departures, hosts, FAQs, form options
+  lib/          booking.ts (availability + pricing), formatting, filtering, validation
   pages/        One file per route
   state/        AppProvider (bookings + departures, localStorage) and ToastProvider
   types.ts      Tour, Departure, TravellerPreview, Booking, Host
@@ -68,9 +82,9 @@ src/
 
 ## Notes
 
-- Imagery is hand-drawn inline SVG (`src/components/TourArt.tsx`) — nothing to load, nothing to break.
-- Traveller privacy: only first name, age range, languages, one vibe tag, verification badge and
-  completed-trip count are ever shown. Never contact details, surnames or social links.
-- Insurance and licensing copy on `/safety` is explicitly labelled as a placeholder pending
-  verification, and should stay that way until it is real.
-- Reset the demo from **My trips → Demo controls → Reset demo data**.
+- Imagery is hand-drawn inline SVG (`src/components/TourArt.tsx`). No stock photography.
+- Traveller privacy: a first name, plus only what the traveller optionally chose to share.
+- Host profiles carry no ratings, trip counts or screening badges — there is no verified
+  data behind those claims yet, and `/safety` says so explicitly.
+- There is no automated test suite. Booking-state changes should be re-verified against the
+  scenarios in `src/lib/booking.ts`.

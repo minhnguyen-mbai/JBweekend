@@ -15,7 +15,7 @@ const columns = [
   {
     title: 'Travellers',
     links: [
-      { to: '/start-trip', label: 'Start a trip' },
+      { to: '/start-trip', label: 'Request a date' },
       { to: '/my-trips', label: 'My trips' },
       { to: '/safety', label: 'Safety and trust' },
       { to: '/safety#conduct', label: 'Traveller code of conduct' },
@@ -32,12 +32,12 @@ export function Footer() {
             <Logo tone="sand" />
           </div>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-sand/75">
-            Three seats. One local host. A different side of Johor. JB Weekend runs a small
-            number of curated departures each month so cars actually fill and trips actually run.
+            Curated Johor day trips in a small car, with three traveller seats and one local host.
+            A small number of departures each month, so cars actually fill.
           </p>
           <p className="mt-5 flex items-start gap-2 text-sm text-sand/75">
             <MapPin className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden="true" />
-            All trips meet and end at JB CIQ. You cross the border yourself.
+            All trips meet and end at JB CIQ. You cross the border independently.
           </p>
           <div className="mt-5 flex gap-3">
             {[
@@ -47,7 +47,7 @@ export function Footer() {
             ].map(({ Icon, label }) => (
               <span
                 key={label}
-                title={`${label} — demo prototype, not connected`}
+                title={`${label} — not connected yet`}
                 className="grid size-9 place-items-center rounded-lg border border-sand/20 text-sand/70"
               >
                 <Icon className="size-4" aria-hidden="true" />
@@ -60,12 +60,12 @@ export function Footer() {
         {columns.map((col) => (
           <div key={col.title}>
             <h3 className="text-sm font-semibold text-sand">{col.title}</h3>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-2">
               {col.links.map((link) => (
                 <li key={link.label}>
                   <Link
                     to={link.to}
-                    className="text-sm text-sand/75 underline-offset-4 transition hover:text-sand hover:underline"
+                    className="inline-flex min-h-11 items-center text-sm text-sand/75 underline-offset-4 transition hover:text-sand hover:underline"
                   >
                     {link.label}
                   </Link>
@@ -80,7 +80,7 @@ export function Footer() {
         <div className="wrap flex flex-col gap-2 py-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 JB Weekend. An early curated travel service operating from Singapore and Johor.</p>
           <p>
-            Prototype build — payments are simulated and no booking is real.
+            Prototype build — payment is arranged manually and no booking is live.
           </p>
         </div>
       </div>

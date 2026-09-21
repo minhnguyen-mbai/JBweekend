@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { Booking, Departure, TravellerDetails } from '../types'
 
-export type StartTripInput = {
+export type RequestDateInput = {
   tourId: string
   date: string
   flexibleDates: string[]
@@ -10,7 +10,7 @@ export type StartTripInput = {
   traveller: TravellerDetails
 }
 
-export type ClaimInput = {
+export type BookingRequest = {
   departureId: string
   seats: number
   traveller: TravellerDetails
@@ -26,9 +26,9 @@ export type AppState = {
 export type AppContextValue = {
   state: AppState
   /** Reserves seats (or the whole car) and returns the created booking. */
-  book: (input: ClaimInput) => Booking
-  /** Creates a new open departure, holds the starter's seats, returns both. */
-  startTrip: (input: StartTripInput) => { departure: Departure; booking: Booking }
+  book: (input: BookingRequest) => Booking
+  /** Creates a new open departure, holds the requester's seats, returns both. */
+  requestDate: (input: RequestDateInput) => { departure: Departure; booking: Booking }
   cancelBooking: (bookingId: string) => void
   moveBooking: (bookingId: string, toDepartureId: string) => void
   resetDemo: () => void

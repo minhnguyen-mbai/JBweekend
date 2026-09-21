@@ -5,7 +5,7 @@ import { Logo } from './Logo'
 
 const links = [
   { to: '/trips', label: 'Explore trips' },
-  { to: '/start-trip', label: 'Start a trip' },
+  { to: '/start-trip', label: 'Request a date' },
   { to: '/my-trips', label: 'My trips' },
   { to: '/safety', label: 'Safety' },
 ]
@@ -31,7 +31,7 @@ export function Header() {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `rounded-lg px-3 py-2 text-sm font-medium transition ${
+                `inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium transition ${
                   isActive ? 'bg-forest/10 text-forest' : 'text-charcoal/75 hover:bg-forest/5 hover:text-forest'
                 }`
               }
@@ -43,14 +43,14 @@ export function Header() {
 
         <div className="hidden md:block">
           <Link to="/trips" className="btn btn-forest">
-            Find upcoming trips
+            View departures
           </Link>
         </div>
 
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="-mr-2 grid size-10 place-items-center rounded-lg text-forest transition hover:bg-forest/5 md:hidden"
+          className="-mr-2 grid size-11 place-items-center rounded-lg text-forest transition hover:bg-forest/5 md:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? 'Close menu' : 'Open menu'}
@@ -68,7 +68,7 @@ export function Header() {
                 to={link.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-3 text-[15px] font-medium transition ${
+                  `flex min-h-11 items-center rounded-lg px-3 text-[15px] font-medium transition ${
                     isActive ? 'bg-forest/10 text-forest' : 'text-charcoal/80'
                   }`
                 }
@@ -77,7 +77,7 @@ export function Header() {
               </NavLink>
             ))}
             <Link to="/trips" onClick={() => setOpen(false)} className="btn btn-forest mt-2">
-              Find upcoming trips
+              View departures
             </Link>
           </nav>
         </div>

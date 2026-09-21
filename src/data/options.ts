@@ -2,7 +2,7 @@ export const ageRanges = ['18–24', '25–34', '35–44', '45–54', '55+']
 
 export const languages = ['English', 'Mandarin', 'Malay', 'Tamil', 'Cantonese']
 
-export const vibeTags = [
+export const preferenceTags = [
   'Foodie',
   'Photography',
   'Adventure',

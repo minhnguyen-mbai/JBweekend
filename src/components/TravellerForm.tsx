@@ -1,62 +1,69 @@
+import { useId, useState } from 'react'
+import { ChevronDown } from 'lucide-react'
 import type { TravellerDetails } from '../types'
 import type { FormErrors } from '../lib/validation'
-import { ageRanges, languages, vibeTags } from '../data/options'
+import { ageRanges, languages, preferenceTags } from '../data/options'
 
 export function TravellerForm({
   details,
   onChange,
   errors,
-  consent,
-  onConsentChange,
 }: {
   details: TravellerDetails
   onChange: (next: TravellerDetails) => void
   errors: FormErrors
-  consent: boolean
-  onConsentChange: (value: boolean) => void
 }) {
+  const [showPreferences, setShowPreferences] = useState(false)
+  const panelId = useId()
+
   function set<K extends keyof TravellerDetails>(key: K, value: TravellerDetails[K]) {
     onChange({ ...details, [key]: value })
   }
 
-  function toggleVibe(tag: string) {
-    const has = details.vibes.includes(tag)
-    if (has) {
-      set('vibes', details.vibes.filter((v) => v !== tag))
-    } else if (details.vibes.length < 3) {
-      set('vibes', [...details.vibes, tag])
+  function togglePreference(tag: string) {
+    const current = details.preferences ?? []
+    if (current.includes(tag)) {
+      set('preferences', current.filter((v) => v !== tag))
+    } else if (current.length < 3) {
+      set('preferences', [...current, tag])
     }
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
           id="firstName"
           label="First name"
-          hint="Shown to your travel companions. Your surname is never displayed."
+          hint="Shown to the others in your car. We never show surnames."
           error={errors.firstName}
         >
           <input
             id="firstName"
-            name="given-name"
             autoComplete="given-name"
             className="field"
             value={details.firstName}
             aria-invalid={Boolean(errors.firstName)}
+            aria-describedby={errors.firstName ? 'firstName-error' : 'firstName-hint'}
             onChange={(e) => set('firstName', e.target.value)}
           />
         </Field>
 
-        <Field id="email" label="Email" hint="Booking confirmation and trip updates." error={errors.email}>
+        <Field
+          id="email"
+          label="Email"
+          hint="Booking confirmation and trip updates."
+          error={errors.email}
+        >
           <input
             id="email"
             type="email"
-            autoComplete="email"
             inputMode="email"
+            autoComplete="email"
             className="field"
             value={details.email}
             aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? 'email-error' : 'email-hint'}
             onChange={(e) => set('email', e.target.value)}
           />
         </Field>
@@ -64,145 +71,122 @@ export function TravellerForm({
         <Field
           id="phone"
           label="Mobile number"
-          hint="Verified before departure. Only your host sees it."
+          hint="How your host reaches you at JB CIQ on the day."
           error={errors.phone}
         >
           <input
             id="phone"
             type="tel"
-            autoComplete="tel"
             inputMode="tel"
+            autoComplete="tel"
             placeholder="+65 8123 4567"
             className="field"
             value={details.phone}
             aria-invalid={Boolean(errors.phone)}
+            aria-describedby={errors.phone ? 'phone-error' : 'phone-hint'}
             onChange={(e) => set('phone', e.target.value)}
-          />
-        </Field>
-
-        <Field id="ageRange" label="Age range" hint="Shown as a range, never your date of birth." error={errors.ageRange}>
-          <select
-            id="ageRange"
-            className="field"
-            value={details.ageRange}
-            aria-invalid={Boolean(errors.ageRange)}
-            onChange={(e) => set('ageRange', e.target.value)}
-          >
-            <option value="">Select an age range</option>
-            {ageRanges.map((range) => (
-              <option key={range} value={range}>
-                {range}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field id="language" label="Preferred language" error={errors.language}>
-          <select
-            id="language"
-            className="field"
-            value={details.language}
-            aria-invalid={Boolean(errors.language)}
-            onChange={(e) => set('language', e.target.value)}
-          >
-            <option value="">Select a language</option>
-            {languages.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field
-          id="dietary"
-          label="Dietary requirements"
-          hint="Halal, vegetarian, allergies — anything your host should plan around."
-        >
-          <input
-            id="dietary"
-            className="field"
-            placeholder="Optional"
-            value={details.dietary}
-            onChange={(e) => set('dietary', e.target.value)}
           />
         </Field>
       </div>
 
-      <fieldset>
-        <legend className="label">Travel vibe · pick up to three</legend>
-        <p className="mb-2 text-xs text-sage">
-          Used to describe you to your companions. It never ranks or filters people.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {vibeTags.map((tag) => {
-            const active = details.vibes.includes(tag)
-            const disabled = !active && details.vibes.length >= 3
-            return (
-              <button
-                key={tag}
-                type="button"
-                aria-pressed={active}
-                disabled={disabled}
-                onClick={() => toggleVibe(tag)}
-                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                  active
-                    ? 'border-forest bg-forest text-sand'
-                    : 'border-line bg-white text-charcoal/80 hover:border-forest/40'
-                }`}
-              >
-                {tag}
-              </button>
-            )
-          })}
-        </div>
-      </fieldset>
-
-      <fieldset className="grid gap-4 sm:grid-cols-2">
-        <legend className="label">Emergency contact</legend>
-        <Field id="emergencyName" label="Name" error={errors.emergencyName}>
-          <input
-            id="emergencyName"
-            className="field"
-            value={details.emergencyName}
-            aria-invalid={Boolean(errors.emergencyName)}
-            onChange={(e) => set('emergencyName', e.target.value)}
-          />
-        </Field>
-        <Field id="emergencyPhone" label="Contact number" error={errors.emergencyPhone}>
-          <input
-            id="emergencyPhone"
-            type="tel"
-            inputMode="tel"
-            className="field"
-            value={details.emergencyPhone}
-            aria-invalid={Boolean(errors.emergencyPhone)}
-            onChange={(e) => set('emergencyPhone', e.target.value)}
-          />
-        </Field>
-      </fieldset>
-
-      <div>
-        <label className="flex items-start gap-3 rounded-xl border border-line bg-white p-3.5">
-          <input
-            type="checkbox"
-            checked={consent}
-            aria-invalid={Boolean(errors.consent)}
-            aria-describedby={errors.consent ? 'consent-error' : undefined}
-            onChange={(e) => onConsentChange(e.target.checked)}
-            className="mt-0.5 size-4 shrink-0 accent-[#18382B]"
-          />
-          <span className="text-sm leading-relaxed text-charcoal/80">
-            I agree to the <strong className="text-forest">traveller code of conduct</strong>: be on
-            time, be respectful of the other two travellers and the host, no alcohol or substances in
-            the car, and no contacting other travellers outside the trip chat without their consent.
+      {/* Everything below is optional and starts collapsed. */}
+      <div className="overflow-hidden rounded-xl border border-line bg-white">
+        <button
+          type="button"
+          aria-expanded={showPreferences}
+          aria-controls={panelId}
+          onClick={() => setShowPreferences((v) => !v)}
+          className="flex min-h-11 w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-sand/50"
+        >
+          <span>
+            <span className="block text-sm font-semibold text-forest">Trip preferences</span>
+            <span className="block text-xs text-sage">
+              Optional — helps your host plan. You can add these later.
+            </span>
           </span>
-        </label>
-        {errors.consent && (
-          <p id="consent-error" className="mt-1.5 text-sm text-coral-dark">
-            {errors.consent}
-          </p>
-        )}
+          <ChevronDown
+            className={`size-5 shrink-0 text-sage transition-transform ${showPreferences ? 'rotate-180' : ''}`}
+            aria-hidden="true"
+          />
+        </button>
+
+        <div id={panelId} hidden={!showPreferences} className="border-t border-line p-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field id="ageRange" label="Age range">
+              <select
+                id="ageRange"
+                className="field"
+                value={details.ageRange ?? ''}
+                onChange={(e) => set('ageRange', e.target.value)}
+              >
+                <option value="">Prefer not to say</option>
+                {ageRanges.map((range) => (
+                  <option key={range} value={range}>
+                    {range}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field id="language" label="Preferred language">
+              <select
+                id="language"
+                className="field"
+                value={details.language ?? ''}
+                onChange={(e) => set('language', e.target.value)}
+              >
+                <option value="">No preference</option>
+                {languages.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <div className="sm:col-span-2">
+              <Field
+                id="dietary"
+                label="Dietary requirements"
+                hint="Food is paid as you go, but your host picks the stops."
+              >
+                <input
+                  id="dietary"
+                  className="field"
+                  placeholder="Halal, vegetarian, allergies…"
+                  value={details.dietary ?? ''}
+                  onChange={(e) => set('dietary', e.target.value)}
+                />
+              </Field>
+            </div>
+          </div>
+
+          <fieldset className="mt-4">
+            <legend className="label">How you like to travel · up to three</legend>
+            <div className="flex flex-wrap gap-2">
+              {preferenceTags.map((tag) => {
+                const active = (details.preferences ?? []).includes(tag)
+                const disabled = !active && (details.preferences ?? []).length >= 3
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    aria-pressed={active}
+                    disabled={disabled}
+                    onClick={() => togglePreference(tag)}
+                    className={`min-h-11 rounded-full border px-3.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      active
+                        ? 'border-forest bg-forest text-sand'
+                        : 'border-line bg-white text-charcoal/80 hover:border-forest/40'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                )
+              })}
+            </div>
+          </fieldset>
+        </div>
       </div>
     </div>
   )
@@ -227,9 +211,13 @@ function Field({
         {label}
       </label>
       {children}
-      {hint && !error && <p className="mt-1.5 text-xs text-sage">{hint}</p>}
+      {hint && !error && (
+        <p id={`${id}-hint`} className="mt-1.5 text-xs text-sage">
+          {hint}
+        </p>
+      )}
       {error && (
-        <p className="mt-1.5 text-sm text-coral-dark" role="alert">
+        <p id={`${id}-error`} className="mt-1.5 text-sm font-medium text-coral-dark" role="alert">
           {error}
         </p>
       )}

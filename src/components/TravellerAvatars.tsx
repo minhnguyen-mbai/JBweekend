@@ -1,28 +1,27 @@
-import { BadgeCheck } from 'lucide-react'
 import type { TravellerPreview } from '../types'
 
 /**
- * Privacy rule: first name, age range, languages, one vibe tag, verification and trip
- * count only. Never surnames, contact details, employers or social links.
+ * Privacy rule: first name plus whatever the traveller chose to share. Never
+ * surnames, contact details, employers or social links.
  */
 export function TravellerAvatars({
   travellers,
-  capacity = 3,
+  travellerCapacity = 3,
   className = '',
 }: {
   travellers: TravellerPreview[]
-  capacity?: number
+  travellerCapacity?: number
   className?: string
 }) {
-  const empty = Math.max(0, capacity - travellers.length)
+  const empty = Math.max(0, travellerCapacity - travellers.length)
+  const names = travellers.map((t) => (t.isYou ? 'You' : t.firstName)).join(', ')
   return (
     <div className={`flex items-center ${className}`}>
-      <div className="flex -space-x-2">
+      <div className="flex -space-x-2" aria-hidden="true">
         {travellers.map((t) => (
           <span
             key={t.id}
-            title={`${t.firstName}, ${t.ageRange}`}
-            className={`grid size-7 place-items-center rounded-full ring-2 ring-white text-[11px] font-semibold ${
+            className={`grid size-7 place-items-center rounded-full text-[11px] font-semibold ring-2 ring-white ${
               t.isYou ? 'bg-coral text-white' : 'bg-forest text-sand'
             }`}
           >
@@ -37,15 +36,20 @@ export function TravellerAvatars({
         ))}
       </div>
       <p className="ml-2.5 text-xs text-sage">
-        {travellers.length === 0
-          ? 'No travellers yet'
-          : travellers.map((t) => (t.isYou ? 'You' : t.firstName)).join(', ')}
+        {travellers.length === 0 ? 'No seats claimed yet' : names}
       </p>
     </div>
   )
 }
 
+/** A single traveller in "Your travel group". */
 export function TravellerChip({ traveller }: { traveller: TravellerPreview }) {
+  const details = [
+    traveller.ageRange,
+    traveller.languages?.join(', '),
+    traveller.preferences?.slice(0, 2).join(', '),
+  ].filter(Boolean)
+
   return (
     <li className="flex items-start gap-3 rounded-xl border border-line bg-white p-3">
       <span
@@ -57,23 +61,11 @@ export function TravellerChip({ traveller }: { traveller: TravellerPreview }) {
         {traveller.firstName.slice(0, 1).toUpperCase()}
       </span>
       <div className="min-w-0">
-        <p className="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-forest">
+        <p className="text-sm font-semibold text-forest">
           {traveller.isYou ? `${traveller.firstName} (you)` : traveller.firstName}
-          {traveller.verified && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-teal">
-              <BadgeCheck className="size-3.5" aria-hidden="true" />
-              Verified
-            </span>
-          )}
         </p>
-        <p className="mt-0.5 text-xs text-sage">
-          {traveller.ageRange} · {traveller.languages.join(', ')}
-          {traveller.vibes[0] ? ` · ${traveller.vibes[0]}` : ''}
-        </p>
-        <p className="mt-0.5 text-xs text-sage">
-          {traveller.completedTrips === 0
-            ? 'First JB Weekend trip'
-            : `${traveller.completedTrips} trip${traveller.completedTrips === 1 ? '' : 's'} completed`}
+        <p className="mt-0.5 text-xs leading-relaxed text-sage">
+          {details.length > 0 ? details.join(' · ') : 'Shared nothing else yet'}
         </p>
       </div>
     </li>

@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react'
 import type { Departure } from '../types'
-import { deriveStatus, seatLabel, seatsLeft } from '../lib/seats'
+import { deriveStatus, seatLabel, remainingSeats } from '../lib/booking'
 
 type Size = 'sm' | 'md' | 'lg'
 
@@ -26,13 +26,13 @@ export function SeatProgress({
   className?: string
 }) {
   const status = deriveStatus(departure)
-  const left = seatsLeft(departure)
+  const left = remainingSeats(departure)
   const s = sizing[size]
   const isPrivate = status === 'private'
 
-  const seats = Array.from({ length: departure.capacity }, (_, i) => {
+  const seats = Array.from({ length: departure.travellerCapacity }, (_, i) => {
     const traveller = departure.travellers[i]
-    const filled = i < departure.seatsClaimed
+    const filled = i < departure.claimedSeats
     return { traveller, filled, index: i }
   })
 

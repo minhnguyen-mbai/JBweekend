@@ -1,6 +1,6 @@
 import type { Departure, Tour, TourCategory } from '../types'
 import { tourById } from '../data/tours'
-import { deriveStatus, seatsLeft } from './seats'
+import { deriveStatus, remainingSeats } from './booking'
 import { isInWeekend, isPastDate, parseDate } from './format'
 
 export type TripView = { departure: Departure; tour: Tour }
@@ -85,7 +85,7 @@ export function sortTrips(trips: TripView[], sort: SortKey): TripView[] {
   switch (sort) {
     case 'fewest_seats':
       return copy.sort((a, b) => {
-        const left = seatsLeft(a.departure) - seatsLeft(b.departure)
+        const left = remainingSeats(a.departure) - remainingSeats(b.departure)
         if (left !== 0) return left
         return parseDate(a.departure.date).getTime() - parseDate(b.departure.date).getTime()
       })

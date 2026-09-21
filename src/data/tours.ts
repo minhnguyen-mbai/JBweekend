@@ -11,7 +11,7 @@ export const tours: Tour[] = [
     hook: 'Four stops. No tourist queues. Hosted by someone who grew up here.',
     duration: 'About 8 hours',
     sharedSeatPrice: 119,
-    privatePrice: 350,
+    privateCarPrice: 350,
     heroImage: 'kampung-table',
     tags: ['Local food', 'Hidden gems', 'Small group'],
     bestFor: ['Foodies', 'Couples', 'Repeat JB visitors'],
@@ -35,19 +35,19 @@ export const tours: Tour[] = [
         time: '3:45 PM',
         title: 'Afternoon wet market walk',
         detail:
-          'Tropical fruit you will not see in an NTUC, belacan being pounded, and a stall that has sold the same curry puff since 1988. Tastings included.',
+          'Tropical fruit you will not see in an NTUC, belacan being pounded, and a stall that has sold the same curry puff since 1988. Your host points you at what is worth buying.',
       },
       {
         time: '5:15 PM',
         title: 'Kampung detour and tea stop',
         detail:
-          'A short drive through a residential kampung where your host grew up, with a stop for teh tarik and a proper sit-down before dinner.',
+          'A short drive through a residential kampung where your host grew up, with a stop for teh tarik and a proper sit-down before dinner. Drinks are paid at the stall.',
       },
       {
         time: '6:45 PM',
         title: 'Fishing-village seafood dinner',
         detail:
-          'A jetty-side kitchen where the order depends on what came in that afternoon. Usually chilli crab, steamed fish, midin greens, and rice for the table.',
+          'A jetty-side kitchen where the order depends on what came in that afternoon. Your host has the table booked and orders for the group; you settle the bill between you.',
       },
       {
         time: '8:15 PM',
@@ -63,19 +63,18 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private four-seat car with your local host driving',
-      'All four food stops, including a full seafood dinner',
-      'Market tastings and a mid-afternoon tea stop',
-      'Fuel, tolls and parking for the entire route',
-      'Table reservations arranged in advance',
-      'Bottled water in the car',
+      'Private car and all transport within Johor',
+      'Your local host, who drives and guides the whole route',
+      'Pick-up and drop-off at JB CIQ',
+      'The curated itinerary and table reservations',
+      'Trip coordination and support on the day',
     ],
     excluded: [
+      'Food and drinks at every stop, paid as you go',
+      'Shopping at the market',
+      'Any optional activities you add on the day',
       'Your Singapore–Johor border crossing',
-      'Alcoholic drinks at dinner',
-      'Personal shopping at the market',
       'Travel insurance',
-      'Tips for your host, which are never expected',
     ],
     weatherPlan:
       'Food stops are indoors or covered, so rain rarely changes the plan. If the market closes for a public holiday, your host swaps in a covered hawker centre of similar standing and tells the group in the chat beforehand.',
@@ -107,7 +106,7 @@ export const tours: Tour[] = [
     hook: 'Three racers. Two circuits. One leaderboard.',
     duration: 'About 8 hours',
     sharedSeatPrice: 159,
-    privatePrice: 450,
+    privateCarPrice: 450,
     heroImage: 'petrolhead-night',
     tags: ['Go-kart', 'Competition', 'Massage'],
     bestFor: ['Groups of friends', 'Birthdays', 'Colleagues'],
@@ -125,7 +124,7 @@ export const tours: Tour[] = [
         time: '2:45 PM',
         title: 'Circuit one — practice and first timed run',
         detail:
-          'An outdoor track with long straights. One practice session to learn the line, then your first timed run goes on the board.',
+          'An outdoor track with long straights. Your host has the slots booked; you pay the circuit directly for each session.',
       },
       {
         time: '4:30 PM',
@@ -143,7 +142,7 @@ export const tours: Tour[] = [
         time: '7:45 PM',
         title: '90-minute sports massage',
         detail:
-          'A proper local massage house, not a hotel spa. Booked as a group, timed for the moment your shoulders realise what you did.',
+          'A proper local massage house, not a hotel spa. Booked as a group and paid at the counter, timed for the moment your shoulders realise what you did.',
       },
       {
         time: '9:45 PM',
@@ -152,19 +151,18 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private four-seat car with your local host driving',
-      'Three timed go-kart sessions across two circuits',
-      'Helmet, head sock and racing suit hire',
-      'Bak kut teh dinner with sides for the table',
-      '90-minute sports massage per traveller',
-      'Fuel, tolls, parking and all circuit entry fees',
+      'Private car and all transport within Johor',
+      'Your local host, who drives and guides the whole route',
+      'Pick-up and drop-off at JB CIQ',
+      'The curated itinerary, circuit slots and massage booked ahead',
+      'Trip coordination and support on the day',
     ],
     excluded: [
-      'Your Singapore–Johor border crossing',
-      'Extra kart sessions beyond the three included',
-      'Drinks beyond what comes with dinner',
-      'Travel insurance',
-      'Tips for your host, which are never expected',
+      'Go-kart session fees and equipment hire, paid at each circuit',
+      'The sports massage, paid at the massage house',
+      'Food and drinks',
+      'Any optional activities you add on the day',
+      'Your Singapore–Johor border crossing and travel insurance',
     ],
     weatherPlan:
       'Circuit one is outdoors. If it rains hard, that session moves indoors to circuit two and you still get three timed runs — the karting operators run wet sessions where it is safe, and your host makes the call on the day.',
@@ -182,7 +180,7 @@ export const tours: Tour[] = [
       {
         question: 'Can I skip the massage?',
         answer:
-          'You can, but the price does not change since the slot is booked for the group. Most people who plan to skip it end up going anyway.',
+          'Yes. The massage is booked for the group but paid at the counter, so skipping it simply means you do not pay for it. Tell your host during the day and the booking is adjusted.',
       },
     ],
   },
@@ -196,7 +194,7 @@ export const tours: Tour[] = [
     hook: 'Stand at the southernmost point of mainland Asia and return home the same night.',
     duration: 'About 9 hours',
     sharedSeatPrice: 119,
-    privatePrice: 340,
+    privateCarPrice: 340,
     heroImage: 'end-of-asia',
     tags: ['Nature', 'Sunset', 'Seafood'],
     bestFor: ['Couples', 'Photographers', 'First-time explorers'],
@@ -214,7 +212,7 @@ export const tours: Tour[] = [
         time: '2:30 PM',
         title: 'Tanjung Piai National Park',
         detail:
-          'Mangrove boardwalks out over the water to the marker at the southernmost tip of mainland Asia. Macaques, mudskippers and the shipping lane behind you.',
+          'Mangrove boardwalks out over the water to the marker at the southernmost tip of mainland Asia. Park entry is paid at the gate; macaques, mudskippers and the shipping lane are free.',
       },
       {
         time: '4:15 PM',
@@ -232,7 +230,7 @@ export const tours: Tour[] = [
         time: '7:00 PM',
         title: 'Seafood dinner as the sun goes down',
         detail:
-          'A coastal restaurant facing west. Grilled fish, butter prawns, kangkung and rice, ordered for the table.',
+          'A coastal restaurant facing west, booked ahead by your host. Grilled fish, butter prawns and kangkung, ordered for the table and settled between you.',
       },
       {
         time: '9:45 PM',
@@ -241,22 +239,21 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private four-seat car with your local host driving',
-      'Tanjung Piai National Park entrance tickets',
-      'Guided walk through Kukup stilt village',
-      'Café stop in Pontian',
-      'Coastal seafood dinner for the table',
-      'Fuel, tolls, parking and all entrance fees',
+      'Private car and all transport within Johor',
+      'Your local host, who drives and guides the whole route',
+      'Pick-up and drop-off at JB CIQ',
+      'The curated itinerary and a guided walk through Kukup',
+      'Trip coordination and support on the day',
     ],
     excluded: [
-      'Your Singapore–Johor border crossing',
-      'Optional boat ride at Kukup, roughly RM 30 per person',
-      'Alcoholic drinks at dinner',
-      'Travel insurance',
-      'Tips for your host, which are never expected',
+      'Tanjung Piai National Park entry, paid at the gate',
+      'Food and drinks, including the seafood dinner',
+      'Optional boat ride at Kukup',
+      'Any optional activities you add on the day',
+      'Your Singapore–Johor border crossing and travel insurance',
     ],
     weatherPlan:
-      'The boardwalk at Tanjung Piai closes during lightning. If that happens your host reorders the day, takes Kukup first, and comes back — and if the park stays shut, the park ticket portion is refunded to every traveller within three working days.',
+      'The boardwalk at Tanjung Piai closes during lightning. If that happens your host reorders the day, takes Kukup first, and comes back. Park entry is paid at the gate, so a closed park simply means you do not pay it, and your host swaps in the Pontian coast road instead.',
     faqs: [
       {
         question: 'How much walking is involved?',

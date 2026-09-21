@@ -1,6 +1,6 @@
 import { Check, Clock, Flame, Lock, Users } from 'lucide-react'
 import type { DepartureStatus } from '../types'
-import { statusLabel } from '../lib/seats'
+import { statusLabel } from '../lib/booking'
 
 const config: Record<
   DepartureStatus,
@@ -28,7 +28,6 @@ export function StatusBadge({
     >
       <Icon className={size === 'sm' ? 'size-3' : 'size-3.5'} aria-hidden="true" />
       {statusLabel(status)}
-      {status === 'private' && <span className="sr-only"> — guaranteed departure</span>}
     </span>
   )
 }

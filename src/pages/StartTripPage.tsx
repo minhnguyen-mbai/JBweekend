@@ -17,7 +17,7 @@ import { departurePreferences } from '../data/options'
 import { useApp } from '../state/appContext'
 import { useToast } from '../state/toastContext'
 import type { Booking, Departure, TravellerDetails } from '../types'
-import { DEPOSIT_PER_SEAT } from '../lib/seats'
+import { DEPOSIT_PER_SEAT } from '../lib/booking'
 import { formatDateLong, formatDateShort, formatDeadline, formatPrice, parseDate } from '../lib/format'
 import { copyText } from '../lib/clipboard'
 import { BookingStepper } from '../components/BookingStepper'
@@ -29,7 +29,7 @@ import type { FormErrors } from '../lib/validation'
 import { buildShareLink } from '../lib/share'
 import { ShareModal } from '../components/ShareModal'
 
-const steps = ['Choose a trip', 'Preferred date', 'Backup dates', 'Seats & details']
+const steps = ['Route', 'Preferred date', 'Backup dates', 'Seats and details']
 
 const emptyTraveller: TravellerDetails = {
   firstName: '',
@@ -37,10 +37,6 @@ const emptyTraveller: TravellerDetails = {
   phone: '',
   ageRange: '',
   language: '',
-  vibes: [],
-  dietary: '',
-  emergencyName: '',
-  emergencyPhone: '',
 }
 
 /** Weekend dates with enough lead time for the car to fill before the deadline. */
@@ -69,7 +65,7 @@ function minDate(): string {
 }
 
 export function StartTripPage() {
-  const { state, startTrip } = useApp()
+  const { state, requestDate } = useApp()
   const { pushToast } = useToast()
 
   const [step, setStep] = useState(0)
@@ -79,7 +75,6 @@ export function StartTripPage() {
   const [seats, setSeats] = useState(1)
   const [preferences, setPreferences] = useState<string[]>([])
   const [details, setDetails] = useState<TravellerDetails>(() => state.profile ?? emptyTraveller)
-  const [consent, setConsent] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitting, setSubmitting] = useState(false)
   const [created, setCreated] = useState<{ departure: Departure; booking: Booking } | null>(null)
@@ -112,18 +107,18 @@ export function StartTripPage() {
   }
 
   function handleSubmit() {
-    const found = validateTraveller(details, consent)
+    const found = validateTraveller(details)
     setErrors(found)
     if (Object.keys(found).length > 0) {
       const firstKey = Object.keys(found)[0]
       document.getElementById(firstKey)?.focus()
-      pushToast('Check the highlighted fields before starting the car.', 'error')
+      pushToast('Check the highlighted fields before requesting this date.', 'error')
       return
     }
     if (!tour || !date) return
     setSubmitting(true)
     window.setTimeout(() => {
-      const result = startTrip({
+      const result = requestDate({
         tourId: tour.id,
         date,
         flexibleDates,
@@ -134,13 +129,13 @@ export function StartTripPage() {
       setSubmitting(false)
       setCreated(result)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      pushToast('Your car is live. Demo deposit recorded on this device.')
+      pushToast('Date requested. Your car is now listed.')
     }, 900)
   }
 
   /* ---------------- Success ---------------- */
   if (created && tour) {
-    const left = created.departure.capacity - created.departure.seatsClaimed
+    const left = created.departure.travellerCapacity - created.departure.claimedSeats
     const link = buildShareLink(tour, created.departure, created.booking.shareCode)
     return (
       <div className="wrap max-w-3xl py-10 sm:py-14">
@@ -153,7 +148,7 @@ export function StartTripPage() {
                 {formatDateLong(created.departure.date)}
               </p>
               <h1 className="mt-1 text-2xl text-sand sm:text-3xl">
-                You started this trip. {left === 1 ? 'One more seat' : 'Two more seats'} to go.
+                Your date is live. {left === 1 ? 'One more seat' : `${left} more seats`} to go.
               </h1>
             </div>
           </div>
@@ -233,7 +228,7 @@ export function StartTripPage() {
             )}
 
             <p className="rounded-lg bg-sand px-3 py-2 text-center text-xs text-sage">
-              Demo prototype — no payment was taken and no message was sent.
+              Payment is arranged manually — we will be in touch to settle the deposit.
             </p>
           </div>
         </div>
@@ -255,13 +250,13 @@ export function StartTripPage() {
       <header className="max-w-2xl">
         <p className="eyebrow flex items-center gap-2">
           <Sparkles className="size-4 text-gold" aria-hidden="true" />
-          Start a trip
+          Request a date
         </p>
         <h1 className="mt-2 text-3xl sm:text-4xl">Pick the date. We will find the other two.</h1>
         <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
-          Starting a car lists your date publicly so other travellers can claim the remaining seats.
-          You pay the same refundable {formatPrice(DEPOSIT_PER_SEAT)} deposit per seat as everyone
-          else.
+          Requesting a date lists that car publicly so other travellers can claim the remaining
+          seats. You hold your own seats with the same refundable{' '}
+          {formatPrice(DEPOSIT_PER_SEAT)} deposit per seat as everyone else.
         </p>
       </header>
 
@@ -272,7 +267,7 @@ export function StartTripPage() {
       <div className="card mt-6 p-5 sm:p-6">
         {step === 0 && (
           <fieldset>
-            <legend className="text-xl">Which trip do you want to run?</legend>
+            <legend className="text-xl">Which route do you want to run?</legend>
             <div className="mt-5 space-y-3">
               {tours.map((t) => {
                 const active = tourId === t.id
@@ -465,8 +460,6 @@ export function StartTripPage() {
                   details={details}
                   onChange={setDetails}
                   errors={errors}
-                  consent={consent}
-                  onConsentChange={setConsent}
                 />
               </div>
             </div>
@@ -476,7 +469,7 @@ export function StartTripPage() {
                 <Row label="Trip" value={tour.title} />
                 <Row label="Date" value={formatDateLong(date)} />
                 <Row label="Seats you are claiming" value={`${seats} of 3`} />
-                <Row label="Deposit today" value={formatPrice(seats * DEPOSIT_PER_SEAT)} strong />
+                <Row label="Amount due today" value={formatPrice(seats * DEPOSIT_PER_SEAT)} strong />
                 <Row
                   label="Balance once the car fills"
                   value={formatPrice(seats * tour.sharedSeatPrice - seats * DEPOSIT_PER_SEAT)}
@@ -516,12 +509,12 @@ export function StartTripPage() {
               {submitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                  Starting your car…
+                  Requesting your date…
                 </>
               ) : (
                 <>
                   <CalendarPlus className="size-4" aria-hidden="true" />
-                  Start this car · {formatPrice(seats * DEPOSIT_PER_SEAT)} (demo)
+                  Request this date · {formatPrice(seats * DEPOSIT_PER_SEAT)} due
                 </>
               )}
             </button>

@@ -6,7 +6,7 @@ import { copyText } from '../lib/clipboard'
 import { buildShareLink } from '../lib/share'
 import { useToast } from '../state/toastContext'
 import { formatDateShort, formatPrice } from '../lib/format'
-import { seatsLeft } from '../lib/seats'
+import { remainingSeats } from '../lib/booking'
 
 export function ShareModal({
   open,
@@ -24,7 +24,7 @@ export function ShareModal({
   const { pushToast } = useToast()
   const [copied, setCopied] = useState<'link' | 'message' | null>(null)
   const link = buildShareLink(tour, departure, shareCode)
-  const left = seatsLeft(departure)
+  const left = remainingSeats(departure)
   const seatsPhrase = left === 1 ? 'one seat left' : `${left} seats left`
   // Only claim a seat in the message when the sharer actually holds one.
   const message = shareCode

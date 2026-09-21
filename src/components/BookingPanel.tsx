@@ -1,17 +1,25 @@
 import { Link } from 'react-router-dom'
-import { Car, Info, ShieldCheck, Users } from 'lucide-react'
+import { Car, Info, Users } from 'lucide-react'
 import type { Departure, Tour } from '../types'
-import { SeatProgress } from './SeatProgress'
-import { DEPOSIT_PER_SEAT, deriveStatus, maxSelectableSeats, primaryCtaLabel, seatHeadline } from '../lib/seats'
-import { formatDateLong, formatDeadline, formatPrice } from '../lib/format'
+import type { BookingKind } from '../lib/booking'
+import {
+  deriveStatus,
+  maxSelectableSeats,
+  primaryCtaLabel,
+  quoteFor,
+  remainingSeats,
+} from '../lib/booking'
+import { formatDeadline, formatPrice } from '../lib/format'
 
-export type BookingMode = 'shared' | 'private'
-
+/**
+ * Booking type and seat count are chosen here and carried into checkout, so the
+ * customer never picks them twice. Every figure comes from quoteFor().
+ */
 export function BookingPanel({
   tour,
   departure,
-  mode,
-  onModeChange,
+  kind,
+  onKindChange,
   seats,
   onSeatsChange,
   className = '',
@@ -19,149 +27,115 @@ export function BookingPanel({
 }: {
   tour: Tour
   departure: Departure
-  mode: BookingMode
-  onModeChange: (mode: BookingMode) => void
+  kind: BookingKind
+  onKindChange: (kind: BookingKind) => void
   seats: number
   onSeatsChange: (seats: number) => void
   className?: string
   alreadyBooked?: boolean
 }) {
   const status = deriveStatus(departure)
-  const isFull = status === 'confirmed' || status === 'private'
-  const maxSeats = maxSelectableSeats(departure)
-  const waitlistMode = isFull && mode === 'shared'
+  const left = remainingSeats(departure)
+  const soldOut = left === 0
+  const sharedUnavailable = soldOut && kind === 'shared'
+  const quote = quoteFor(tour, departure, kind, seats)
+  const maxSeats = maxSelectableSeats(departure, kind)
 
-  const deposit = seats * DEPOSIT_PER_SEAT
-  const sharedTotal = seats * tour.sharedSeatPrice
-  const bookingHref = `/book/${departure.id}?type=${waitlistMode ? 'waitlist' : mode}&seats=${
-    mode === 'private' ? seats : Math.min(seats, Math.max(1, maxSeats))
-  }`
+  const href = sharedUnavailable
+    ? `/book/${departure.id}?type=waitlist&seats=1`
+    : `/book/${departure.id}?type=${kind}&seats=${quote.seats}`
 
   return (
     <section className={`card overflow-hidden ${className}`} aria-label="Book this departure">
       <div className="border-b border-line bg-sand/50 px-5 py-4">
-        <p className="flex items-baseline gap-1.5">
+        <p className="flex flex-wrap items-baseline gap-x-2">
           <span className="font-display text-2xl font-semibold text-forest">
-            {formatPrice(mode === 'private' ? tour.privatePrice : tour.sharedSeatPrice)}
+            {formatPrice(kind === 'private' ? tour.privateCarPrice : tour.sharedSeatPrice)}
           </span>
-          <span className="text-sm text-sage">{mode === 'private' ? 'whole car' : 'per seat'}</span>
+          <span className="text-sm text-sage">{kind === 'private' ? 'whole car' : 'per seat'}</span>
         </p>
-        <p className="mt-1 text-xs text-sage">
-          {mode === 'private'
-            ? `Up to 3 travellers · ${formatPrice(tour.sharedSeatPrice)} per seat if you share instead`
-            : `Whole car ${formatPrice(tour.privatePrice)} · all-inclusive either way`}
+        <p className="mt-1 text-xs leading-relaxed text-sage">
+          Private car and local host included. Food, tickets and activities are paid as you go.
         </p>
       </div>
 
       <div className="space-y-5 p-5">
         <div>
-          <p className="label">How do you want to travel?</p>
-          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Booking type">
-            <ModeButton
-              active={mode === 'shared'}
-              onClick={() => onModeChange('shared')}
+          <p className="label" id="booking-kind-label">
+            How do you want to travel?
+          </p>
+          <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby="booking-kind-label">
+            <KindButton
+              active={kind === 'shared'}
+              onClick={() => onKindChange('shared')}
               Icon={Users}
-              title={isFull ? 'Waitlist' : 'Join shared'}
-              subtitle={isFull ? 'If a seat opens' : 'From S$' + tour.sharedSeatPrice}
+              title={soldOut ? 'Waitlist' : 'Share the car'}
+              subtitle={soldOut ? 'No seats left' : `${formatPrice(tour.sharedSeatPrice)} a seat`}
             />
-            <ModeButton
-              active={mode === 'private'}
-              onClick={() => onModeChange('private')}
+            <KindButton
+              active={kind === 'private'}
+              onClick={() => onKindChange('private')}
               Icon={Car}
-              title="Book private"
+              title="Whole car"
               subtitle="Confirmed now"
             />
           </div>
         </div>
 
-        {mode === 'shared' ? (
-          <>
-            <div className="rounded-xl border border-line bg-sand/40 p-3.5">
-              <SeatProgress departure={departure} size="sm" />
-              <p className="mt-1.5 text-xs leading-relaxed text-charcoal/75">{seatHeadline(departure)}</p>
-            </div>
-
-            {!isFull && (
-              <div>
-                <p className="label">How many seats?</p>
-                <div className="grid grid-cols-2 gap-2" role="group" aria-label="Number of seats">
-                  {[1, 2].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      disabled={n > maxSeats}
-                      aria-pressed={seats === n}
-                      onClick={() => onSeatsChange(n)}
-                      className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 ${
-                        seats === n
-                          ? 'border-forest bg-forest text-sand'
-                          : 'border-line bg-white text-charcoal/80 hover:border-forest/40'
-                      }`}
-                    >
-                      {n === 1 ? 'One seat' : 'Two seats'}
-                    </button>
-                  ))}
-                </div>
-                {maxSeats === 1 && (
-                  <p className="mt-2 text-xs text-coral-dark">
-                    Only one seat is left in this car, so two seats are not available here.
-                  </p>
-                )}
-              </div>
-            )}
-
-            {!isFull ? (
-              <dl className="space-y-2 rounded-xl bg-forest-soft/70 p-3.5 text-sm">
-                <Row label={`${seats} × seat`} value={formatPrice(sharedTotal)} />
-                <Row label="Refundable deposit today" value={formatPrice(deposit)} strong />
-                <Row label="Balance once the car fills" value={formatPrice(sharedTotal - deposit)} />
-                <p className="pt-1 text-xs leading-relaxed text-charcoal/70">
-                  Confirms by {formatDeadline(departure.confirmationDeadline)}. If the third seat is
-                  not claimed by then, choose a full refund, move your deposit to another date, or
-                  upgrade to a private car.
-                </p>
-              </dl>
-            ) : (
-              <p className="rounded-xl bg-gold-soft p-3.5 text-sm leading-relaxed text-charcoal/80">
-                This car is full. Join the waitlist and we will message you first if a seat opens —
-                nothing is charged to join.
-              </p>
-            )}
-          </>
-        ) : (
-          <>
-            <div>
-              <p className="label">How many travellers?</p>
-              <div className="grid grid-cols-3 gap-2" role="group" aria-label="Number of travellers">
-                {[1, 2, 3].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    aria-pressed={seats === n}
-                    onClick={() => onSeatsChange(n)}
-                    className={`rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
-                      seats === n
-                        ? 'border-forest bg-forest text-sand'
-                        : 'border-line bg-white text-charcoal/80 hover:border-forest/40'
-                    }`}
-                  >
-                    {n}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <dl className="space-y-2 rounded-xl bg-forest-soft/70 p-3.5 text-sm">
-              <Row label="Whole car, one price" value={formatPrice(tour.privatePrice)} strong />
-              <Row label="Travellers" value={`${seats} of 3`} />
-              <p className="pt-1 text-xs leading-relaxed text-charcoal/70">
-                Confirmed the moment you book. No waiting for the car to fill, no shared seats.
-              </p>
-            </dl>
-          </>
+        {kind === 'shared' && !soldOut && (
+          <SeatChooser
+            label="How many seats?"
+            max={maxSeats}
+            value={quote.seats}
+            onChange={onSeatsChange}
+            note={
+              quote.fillsCar
+                ? 'This takes the last of the car, so the trip confirms straight away.'
+                : undefined
+            }
+          />
         )}
 
-        <Link to={bookingHref} className={`btn w-full ${status === 'almost_full' && mode === 'shared' ? 'btn-primary' : 'btn-forest'}`}>
-          {primaryCtaLabel(departure, mode === 'private')}
+        {kind === 'private' && (
+          <SeatChooser
+            label="How many travellers?"
+            max={3}
+            value={quote.seats}
+            onChange={onSeatsChange}
+            note="The price is per car, so it does not change with the number of travellers."
+          />
+        )}
+
+        {sharedUnavailable ? (
+          <p className="rounded-xl bg-gold-soft p-3.5 text-sm leading-relaxed text-charcoal/80">
+            All three seats are claimed. Join the waitlist and we will message you first if one
+            opens — nothing is charged to join.
+          </p>
+        ) : (
+          <dl className="space-y-2 rounded-xl bg-forest-soft/70 p-3.5 text-sm">
+            <Row
+              label={kind === 'private' ? 'Whole car' : `${quote.seats} × seat`}
+              value={formatPrice(quote.fareTotal)}
+            />
+            {quote.balanceAfterConfirmation > 0 && (
+              <Row
+                label="Balance once the car fills"
+                value={formatPrice(quote.balanceAfterConfirmation)}
+              />
+            )}
+            <div className="border-t border-forest/10 pt-2">
+              <Row label="Amount due today" value={formatPrice(quote.dueToday)} strong />
+            </div>
+            <p className="pt-1 text-xs leading-relaxed text-charcoal/70">
+              {quote.resultingStatus === 'confirmed'
+                ? 'Confirmed as soon as you book — the full fare is due now, not a deposit.'
+                : `A refundable ${formatPrice(quote.depositPerSeat)} deposit per seat holds your place. Confirms by ${formatDeadline(departure.confirmationDeadline)}; if it does not fill you can take a full refund, move to another date, or upgrade to the whole car.`}
+            </p>
+          </dl>
+        )}
+
+        <Link to={href} className={`btn w-full ${status === 'almost_full' && kind === 'shared' ? 'btn-primary' : 'btn-forest'}`}>
+          {sharedUnavailable ? 'Join waitlist' : primaryCtaLabel(departure, kind)}
         </Link>
 
         {alreadyBooked && (
@@ -171,26 +145,62 @@ export function BookingPanel({
           </p>
         )}
 
-        <ul className="space-y-1.5 text-xs text-sage">
-          <li className="flex items-start gap-2">
-            <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-teal" aria-hidden="true" />
-            Free cancellation until 48 hours before departure.
-          </li>
-          <li className="flex items-start gap-2">
-            <Info className="mt-0.5 size-3.5 shrink-0 text-teal" aria-hidden="true" />
-            Meets at JB CIQ, {formatDateLong(departure.date)} at {departure.startTime}.
-          </li>
-        </ul>
-
-        <p className="rounded-lg bg-sand px-3 py-2 text-[11px] leading-relaxed text-sage">
-          Demo prototype — checkout is simulated and no card is charged.
+        <p className="text-xs leading-relaxed text-sage">
+          Meets at JB CIQ. Free cancellation until 48 hours before departure.
         </p>
       </div>
     </section>
   )
 }
 
-function ModeButton({
+function SeatChooser({
+  label,
+  max,
+  value,
+  onChange,
+  note,
+}: {
+  label: string
+  max: number
+  value: number
+  onChange: (n: number) => void
+  note?: string
+}) {
+  const options = Array.from({ length: Math.max(1, max) }, (_, i) => i + 1)
+  return (
+    <div>
+      <p className="label" id={`${label.replace(/\W/g, '')}-label`}>
+        {label}
+      </p>
+      <div
+        className="grid gap-2"
+        style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
+        role="group"
+        aria-labelledby={`${label.replace(/\W/g, '')}-label`}
+      >
+        {options.map((n) => (
+          <button
+            key={n}
+            type="button"
+            aria-pressed={value === n}
+            onClick={() => onChange(n)}
+            className={`min-h-11 rounded-xl border text-sm font-semibold transition ${
+              value === n
+                ? 'border-forest bg-forest text-sand'
+                : 'border-line bg-white text-charcoal/80 hover:border-forest/40'
+            }`}
+          >
+            {n}
+            <span className="sr-only"> {n === 1 ? 'seat' : 'seats'}</span>
+          </button>
+        ))}
+      </div>
+      {note && <p className="mt-2 text-xs leading-relaxed text-charcoal/70">{note}</p>}
+    </div>
+  )
+}
+
+function KindButton({
   active,
   onClick,
   Icon,
@@ -208,7 +218,7 @@ function ModeButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-xl border p-3 text-left transition ${
+      className={`min-h-11 rounded-xl border p-3 text-left transition ${
         active ? 'border-forest bg-forest text-sand' : 'border-line bg-white hover:border-forest/40'
       }`}
     >

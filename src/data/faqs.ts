@@ -18,13 +18,13 @@ export const sharedFaqs: FaqItem[] = [
       'Two other travellers who chose the same trip and the same date, plus your host. You can see their first name, age range, languages and travel vibe before you book. Matching is by trip and date, not by profile browsing.',
   },
   {
-    question: 'Can I book two seats for me and a friend?',
+    question: 'Can I book more than one seat?',
     answer:
-      'Yes. Claiming two seats leaves one for another traveller, so the car still confirms when that final seat goes. If you want the car to yourselves, book privately instead.',
+      'Yes, up to however many are left. If your booking takes the last of the seats the trip confirms straight away and the full fare for those seats is due at checkout rather than a deposit. If seats remain after you book, you pay the deposit and wait for the car to fill. If you want the car to yourselves, book privately instead.',
   },
   {
-    question: 'Do I need a Malaysian SIM or cash?',
+    question: 'Do I need cash in Johor?',
     answer:
-      'Neither is required. Everything on the itinerary is paid for, and your host handles reservations on the ground. Bring a little cash or an e-wallet only if you want to shop or add drinks.',
+      'Yes, bring ringgit or an e-wallet. Your seat covers the car, your host and the itinerary; food, drinks, entry tickets and any activities are paid as you go. Most stops on these routes take cash more readily than cards. A Malaysian SIM is not needed.',
   },
 ]
