@@ -12,6 +12,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import { useApp } from '../state/appContext'
+import { useTripImages } from '../lib/useTripImages'
 import { tours } from '../data/tours'
 import { hosts } from '../data/hosts'
 import { upcomingTrips } from '../lib/trips'
@@ -24,6 +25,7 @@ import { SeatProgress } from '../components/SeatProgress'
 import { StatusBadge } from '../components/StatusBadge'
 import { SectionHeading } from '../components/SectionHeading'
 import { TourArt } from '../components/TourArt'
+import { PexelsTripImage } from '../components/PexelsTripImage'
 import { HostCard } from '../components/HostCard'
 
 const quickFilters = [
@@ -112,13 +114,20 @@ export function HomePage() {
           {featured && (
             <div>
               <div className="overflow-hidden rounded-[1.25rem] border border-line shadow-lift">
-                <div className="relative aspect-[16/9] sm:aspect-[16/10]">
-                  <TourArt
-                    image={featured.tour.heroImage}
+                <div className="relative aspect-[4/3] sm:aspect-[16/10]">
+                  <PexelsTripImage
+                    route={featured.tour.slug}
+                    illustration={featured.tour.heroImage}
                     title={`${featured.tour.title} — ${featured.tour.hook}`}
-                    className="size-full object-cover"
+                    aspect="h-full"
+                    className="absolute inset-0"
+                    priority="eager"
+                    sizes="(min-width: 1024px) 34rem, 100vw"
+                    attribution="none"
+                    showRepresentativeLabel
                   />
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-charcoal/85 via-charcoal/25 to-transparent p-4 pt-14">
+                  {/* Brand-green wash so the overlaid text stays on-palette and legible. */}
+                  <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-forest/95 via-forest/45 to-transparent p-4 pt-14">
                     <StatusBadge status={deriveStatus(featured.departure)} size="sm" />
                     <h2 className="mt-1.5 text-2xl text-sand">{featured.tour.title}</h2>
                     <p className="text-sm text-sand/85">
@@ -128,6 +137,7 @@ export function HomePage() {
                   </div>
                 </div>
                 <div className="bg-white p-4">
+                  <FeaturedPhotoCredit route={featured.tour.slug} />
                   <SeatProgress departure={featured.departure} size="sm" />
                   <div className="mt-3 flex items-center justify-between gap-3">
                     <p className="text-sm">
@@ -181,8 +191,13 @@ export function HomePage() {
             <TripGridSkeleton count={3} />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {trips.slice(0, 3).map(({ departure, tour }) => (
-                <TripCard key={departure.id} departure={departure} tour={tour} />
+              {trips.slice(0, 3).map(({ departure, tour }, index) => (
+                <TripCard
+                  key={departure.id}
+                  departure={departure}
+                  tour={tour}
+                  priority={index === 0 ? 'eager' : 'lazy'}
+                />
               ))}
             </div>
           )}
@@ -351,5 +366,34 @@ export function HomePage() {
         </div>
       </section>
     </>
+  )
+}
+
+/** Credit for the featured photograph, kept clear of the booking CTA. */
+function FeaturedPhotoCredit({ route }: { route: string }) {
+  const state = useTripImages(route)
+  if (state.status !== 'ready' || !state.payload.primary) return null
+  const photo = state.payload.primary
+  return (
+    <p className="mb-2 text-xs text-sage">
+      Photo by{' '}
+      <a
+        href={photo.photographerUrl || photo.photoUrl}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="underline underline-offset-2"
+      >
+        {photo.photographer}
+      </a>{' '}
+      on{' '}
+      <a
+        href={photo.photoUrl || 'https://www.pexels.com'}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="underline underline-offset-2"
+      >
+        Pexels
+      </a>
+    </p>
   )
 }

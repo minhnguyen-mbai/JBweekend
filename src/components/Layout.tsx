@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import { MobileNav } from './MobileNav'
+import { PexelsDevNotice } from './PexelsDevNotice'
 
 export function Layout() {
   const { pathname, hash } = useLocation()
@@ -20,6 +21,7 @@ export function Layout() {
       >
         Skip to content
       </a>
+      {import.meta.env.DEV && <PexelsDevNotice />}
       <Header />
       <main id="main" className="flex-1">
         <Outlet />

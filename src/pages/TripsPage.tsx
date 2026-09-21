@@ -161,8 +161,13 @@ export function TripsPage() {
           <TripGridSkeleton count={6} />
         ) : results.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map(({ departure, tour }) => (
-              <TripCard key={departure.id} departure={departure} tour={tour} />
+            {results.map(({ departure, tour }, index) => (
+              <TripCard
+                key={departure.id}
+                departure={departure}
+                tour={tour}
+                priority={index === 0 ? 'eager' : 'lazy'}
+              />
             ))}
           </div>
         ) : (

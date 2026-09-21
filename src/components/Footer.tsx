@@ -79,8 +79,16 @@ export function Footer() {
       <div className="border-t border-sand/15">
         <div className="wrap flex flex-col gap-2 py-6 text-xs text-sand/60 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 JB Weekend. An early curated travel service operating from Singapore and Johor.</p>
-          <p>
-            Prototype build — payment is arranged manually and no booking is live.
+          <p className="flex flex-wrap items-center gap-x-2">
+            <span>Prototype build — payment is arranged manually and no booking is live.</span>
+            <a
+              href="https://www.pexels.com"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              className="underline underline-offset-4 transition hover:text-sand"
+            >
+              Photos provided by Pexels
+            </a>
           </p>
         </div>
       </div>

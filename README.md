@@ -23,6 +23,87 @@ npm run dev
 | `npm run preview` | Serve the production build |
 | `npm run lint` | ESLint over the whole project |
 | `npm run typecheck` | `tsc -b` only |
+| `npm test` | Vitest, once |
+| `npm run test:watch` | Vitest, watching |
+
+## Photography (Pexels)
+
+Route photography comes from Pexels through a same-origin API, so the key never
+reaches the browser:
+
+```
+browser → /api/trip-images?route=<slug> → api.pexels.com
+```
+
+`/api` is served by Vercel Functions in production and by a small Vite dev
+middleware locally (`vite-plugins/api-dev-server.ts`), both calling the same
+handler in `api/_lib/handler.ts`.
+
+**The site works without a key.** Every failure path — missing key, timeout,
+rate limit, provider error, empty result, broken image — falls back to the
+existing brand illustrations, and a dev-only notice explains why.
+
+### Setup
+
+1. Create a free API key at <https://www.pexels.com/api/>.
+2. Locally, copy `.env.example` to `.env` and set the value:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   ```env
+   PEXELS_API_KEY=your-key-here
+   ```
+
+   Restart `npm run dev` afterwards. Never prefix it with `VITE_` — that would
+   ship the key to the browser. `.env` is gitignored; do not commit it.
+3. In Vercel: **Project → Settings → Environment Variables**, add
+   `PEXELS_API_KEY` for Production (and Preview if you want images there).
+4. Redeploy. Environment variables are read at request time by the function, but
+   a redeploy guarantees the new value is picked up.
+5. Verify without printing the key:
+
+   ```bash
+   curl -s http://localhost:5173/api/health
+   ```
+
+   ```json
+   { "status": "ok", "pexelsConfigured": true }
+   ```
+
+   Then check a route returns photos:
+
+   ```bash
+   curl -s "http://localhost:5173/api/trip-images?route=end-of-asia" | head -c 400
+   ```
+
+### Choosing the photograph for a route
+
+Route image config lives in `api/_lib/routes.ts` — the single source of truth,
+deliberately server-side so the browser can only ask for a known slug:
+
+```ts
+'end-of-asia': {
+  slug: 'end-of-asia',
+  source: 'pexels',
+  query: 'mangrove boardwalk sunset southeast asia',
+  preferredPhotoId: 1234567,   // optional: pins the route to one photo
+  representative: true,
+}
+```
+
+Without `preferredPhotoId` the API takes the lowest photo id from the query, so
+the same picture appears every time rather than shuffling per request. To pin a
+specific photo, run the dev server with a key and open **`/dev/photos`** — it
+lists the candidates for every route with ids, photographers and Pexels links,
+and a copy button. That page is development-only and is not in production builds.
+
+### Truthfulness
+
+These are **representative photographs**, not documentation of a JB Weekend
+departure, and the UI says so. Pexels images are never used for the host, the
+vehicle, JB CIQ meeting instructions, traveller profiles or safety verification.
 
 ## Routes
 
@@ -86,5 +167,6 @@ src/
 - Traveller privacy: a first name, plus only what the traveller optionally chose to share.
 - Host profiles carry no ratings, trip counts or screening badges — there is no verified
   data behind those claims yet, and `/safety` says so explicitly.
-- There is no automated test suite. Booking-state changes should be re-verified against the
-  scenarios in `src/lib/booking.ts`.
+- Tests run with Vitest (`npm test`) and never call the live Pexels API; the provider is
+  mocked in `tests/fixtures.ts`.
+- Booking-state changes should be re-verified against the scenarios in `src/lib/booking.ts`.

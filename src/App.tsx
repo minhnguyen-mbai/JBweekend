@@ -10,6 +10,7 @@ import { StartTripPage } from './pages/StartTripPage'
 import { MyTripsPage } from './pages/MyTripsPage'
 import { SafetyPage } from './pages/SafetyPage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { DevPhotosPage } from './pages/DevPhotosPage'
 
 export function App() {
   return (
@@ -25,6 +26,10 @@ export function App() {
               <Route path="/start-trip" element={<StartTripPage />} />
               <Route path="/my-trips" element={<MyTripsPage />} />
               <Route path="/safety" element={<SafetyPage />} />
+              {/* Development only: dropped from production builds. */}
+              {import.meta.env.DEV && (
+                <Route path="/dev/photos" element={<DevPhotosPage />} />
+              )}
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

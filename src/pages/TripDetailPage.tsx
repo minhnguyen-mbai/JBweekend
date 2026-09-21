@@ -21,7 +21,8 @@ import { upcomingTrips } from '../lib/trips'
 import type { BookingKind } from '../lib/booking'
 import { deriveStatus, quoteFor, remainingSeats, shortCtaLabel } from '../lib/booking'
 import { formatDateLong, formatDateShort, formatDeadline, formatPrice } from '../lib/format'
-import { TourArt } from '../components/TourArt'
+import { PexelsTripImage } from '../components/PexelsTripImage'
+import { RouteGallery } from '../components/RouteGallery'
 import { StatusBadge } from '../components/StatusBadge'
 import { TravellerChip } from '../components/TravellerAvatars'
 import { HostCard } from '../components/HostCard'
@@ -83,13 +84,20 @@ export function TripDetailPage() {
     <div className={departure ? 'pb-28 lg:pb-0' : ''}>
       {/* ---------------- Compact hero ---------------- */}
       <section className="relative h-44 sm:h-56 lg:h-72">
-        <TourArt
-          image={tour.heroImage}
+        <PexelsTripImage
+          route={tour.slug}
+          illustration={tour.heroImage}
           title={`${tour.title} — ${tour.hook}`}
-          focus="horizon"
-          className="size-full object-cover"
+          aspect="h-full"
+          className="absolute inset-0"
+          priority="eager"
+          sizes="100vw"
+          attribution="none"
+          illustrationFocus="horizon"
+          showRepresentativeLabel
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/85 via-charcoal/40 to-charcoal/10" />
+        {/* Brand-green wash keeps the overlaid title legible and on-palette. */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-forest/90 via-forest/45 to-forest/10" />
         <div className="wrap absolute inset-x-0 bottom-0 pb-4">
           <Link
             to="/trips"
@@ -294,6 +302,8 @@ export function TripDetailPage() {
               <section className="mt-8">
                 <HostCard host={host} />
               </section>
+
+              <RouteGallery route={tour.slug} title={tour.title} className="mt-8" />
             </>
           ) : (
             <section className="card p-5">

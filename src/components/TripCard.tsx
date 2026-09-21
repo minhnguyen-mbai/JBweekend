@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { CalendarClock, Clock } from 'lucide-react'
 import type { Departure, Tour } from '../types'
-import { TourArt } from './TourArt'
+import { PexelsTripImage } from './PexelsTripImage'
+import { useTripImages } from '../lib/useTripImages'
 import { StatusBadge } from './StatusBadge'
 import { deriveStatus, remainingSeats, shortCtaLabel } from '../lib/booking'
 import { formatDateShort, formatDeadline, formatPrice } from '../lib/format'
@@ -16,7 +17,16 @@ const categoryLabel: Record<Tour['category'], string> = {
 /**
  * Scan order is deliberate: status, when, what, seats, deadline, price, action.
  */
-export function TripCard({ departure, tour }: { departure: Departure; tour: Tour }) {
+export function TripCard({
+  departure,
+  tour,
+  priority = 'lazy',
+}: {
+  departure: Departure
+  tour: Tour
+  /** The first card in a grid may load eagerly; the rest stay lazy. */
+  priority?: 'eager' | 'lazy'
+}) {
   const status = deriveStatus(departure)
   const left = remainingSeats(departure)
   const soldOut = left === 0
@@ -24,18 +34,27 @@ export function TripCard({ departure, tour }: { departure: Departure; tour: Tour
 
   return (
     <article className="card group flex flex-col overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lift">
-      <Link to={href} className="relative block aspect-[16/9] overflow-hidden" tabIndex={-1} aria-hidden="true">
-        <TourArt
-          image={tour.heroImage}
+      {/* Not a link: the credit line carries its own anchors, and the title and
+          CTA below already navigate. */}
+      <div className="relative">
+        <PexelsTripImage
+          route={tour.slug}
+          illustration={tour.heroImage}
           title={`${tour.title} in Johor`}
-          className="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          aspect="aspect-[16/9]"
+          priority={priority}
+          sizes="(min-width: 1024px) 22rem, (min-width: 640px) 46vw, 100vw"
+          attribution="none"
+          imageClassName="transition duration-500 group-hover:scale-[1.03]"
         />
         <span className="absolute left-3 top-3">
           <StatusBadge status={status} size="sm" />
         </span>
-      </Link>
+      </div>
 
       <div className="flex flex-1 flex-col p-4">
+        <TripPhotoCredit route={tour.slug} />
+
         {/* 2 — date and time */}
         <p className="flex flex-wrap items-center gap-x-2 text-sm font-semibold text-forest">
           {formatDateShort(departure.date)}
@@ -102,5 +121,35 @@ export function TripCard({ departure, tour }: { departure: Departure; tour: Tour
         </div>
       </div>
     </article>
+  )
+}
+
+/** Small credit line under the card image; never competes with the booking CTA. */
+function TripPhotoCredit({ route }: { route: string }) {
+  const state = useTripImages(route)
+  if (state.status !== 'ready' || !state.payload.primary) return null
+  const photo = state.payload.primary
+  return (
+    <p className="mb-1.5 text-xs text-sage">
+      Photo by{' '}
+      <a
+        href={photo.photographerUrl || photo.photoUrl}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="underline underline-offset-2"
+      >
+        {photo.photographer}
+      </a>{' '}
+      on{' '}
+      <a
+        href={photo.photoUrl || 'https://www.pexels.com'}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        className="underline underline-offset-2"
+      >
+        Pexels
+      </a>{' '}
+      · representative
+    </p>
   )
 }
