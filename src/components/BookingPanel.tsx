@@ -54,8 +54,11 @@ export function BookingPanel({
           </span>
           <span className="text-sm text-sage">{kind === 'private' ? 'whole car' : 'per seat'}</span>
         </p>
-        <p className="mt-1 text-xs leading-relaxed text-sage">
-          Private car and local host included. Food, tickets and activities are paid as you go.
+        <p className="copy-sm mt-1 text-sage">
+          {kind === 'private'
+            ? 'Private use of the whole car for your group.'
+            : 'Small-group car transport and local host included.'}{' '}
+          Food, tickets and activities are paid as you go.
         </p>
       </div>
 
@@ -224,7 +227,7 @@ function KindButton({
     >
       <Icon className={`size-4 ${active ? 'text-gold' : 'text-sage'}`} aria-hidden="true" />
       <span className="mt-1.5 block text-sm font-semibold">{title}</span>
-      <span className={`block text-[11px] ${active ? 'text-sand/70' : 'text-sage'}`}>{subtitle}</span>
+      <span className={`block text-xs ${active ? 'text-sand/70' : 'text-sage'}`}>{subtitle}</span>
     </button>
   )
 }

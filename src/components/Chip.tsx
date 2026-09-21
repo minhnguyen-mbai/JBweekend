@@ -35,7 +35,7 @@ export function ChipRow({ children, label }: { children: ReactNode; label: strin
     <div
       role="group"
       aria-label={label}
-      className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+      className="no-scrollbar bleed flex gap-2 overflow-x-auto pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
     >
       {children}
     </div>

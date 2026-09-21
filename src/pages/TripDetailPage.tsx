@@ -19,7 +19,7 @@ import { sharedFaqs } from '../data/faqs'
 import { useApp } from '../state/appContext'
 import { upcomingTrips } from '../lib/trips'
 import type { BookingKind } from '../lib/booking'
-import { deriveStatus, primaryCtaLabel, quoteFor, remainingSeats } from '../lib/booking'
+import { deriveStatus, quoteFor, remainingSeats, shortCtaLabel } from '../lib/booking'
 import { formatDateLong, formatDateShort, formatDeadline, formatPrice } from '../lib/format'
 import { TourArt } from '../components/TourArt'
 import { StatusBadge } from '../components/StatusBadge'
@@ -98,7 +98,7 @@ export function TripDetailPage() {
             <ArrowLeft className="size-4" aria-hidden="true" />
             All departures
           </Link>
-          <h1 className="mt-1 text-3xl text-sand sm:text-4xl">{tour.title}</h1>
+          <h1 className="mt-1 text-page text-sand">{tour.title}</h1>
           <p className="mt-1 max-w-2xl text-sm text-sand/90">{tour.hook}</p>
         </div>
       </section>
@@ -116,10 +116,10 @@ export function TripDetailPage() {
             <>
               {/* ---------------- Key facts, above the fold ---------------- */}
               <section className="card p-4 sm:p-5" aria-labelledby="facts-heading">
-                <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
                   <div className="min-w-0">
                     <StatusBadge status={status} size="sm" />
-                    <h2 id="facts-heading" className="mt-2 text-xl">
+                    <h2 id="facts-heading" className="mt-2 text-card">
                       {formatDateLong(departure.date)}
                     </h2>
                   </div>
@@ -172,7 +172,13 @@ export function TripDetailPage() {
                       Included
                     </h3>
                     <ul className="mt-1.5 space-y-1">
-                      {['Private car and transport in Johor', 'Local host who drives and guides', 'Pick-up and drop-off at JB CIQ'].map(
+                      {[
+                        kind === 'private'
+                          ? 'Private use of the whole car'
+                          : 'Small-group car transport in Johor',
+                        'Local host who drives and guides',
+                        'Pick-up and drop-off at JB CIQ',
+                      ].map(
                         (item) => (
                           <li key={item} className="flex items-start gap-1.5 text-xs text-charcoal/80">
                             <Check className="mt-0.5 size-3 shrink-0 text-forest" aria-hidden="true" />
@@ -208,7 +214,7 @@ export function TripDetailPage() {
                 <h2 id="dates-heading" className="text-lg">
                   Other dates for this route
                 </h2>
-                <div className="no-scrollbar -mx-5 mt-3 flex gap-2.5 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+                <div className="no-scrollbar bleed mt-3 flex gap-2.5 overflow-x-auto pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
                   {tourDepartures.map(({ departure: dep }) => {
                     const active = dep.id === departure.id
                     const depLeft = remainingSeats(dep)
@@ -257,7 +263,7 @@ export function TripDetailPage() {
 
               {/* ---------------- Your travel group ---------------- */}
               <section className="mt-8" aria-labelledby="group-heading">
-                <h2 id="group-heading" className="text-xl">
+                <h2 id="group-heading" className="text-card">
                   Your travel group
                 </h2>
                 <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal/75">
@@ -291,7 +297,7 @@ export function TripDetailPage() {
             </>
           ) : (
             <section className="card p-5">
-              <h2 className="text-xl">No scheduled car for this route yet</h2>
+              <h2 className="text-card">No scheduled car for this route yet</h2>
               <p className="mt-2 text-sm leading-relaxed text-charcoal/75">
                 Request the date you want and other travellers can claim the remaining seats.
               </p>
@@ -302,7 +308,7 @@ export function TripDetailPage() {
           )}
 
           <section className="mt-8" aria-labelledby="itinerary-heading">
-            <h2 id="itinerary-heading" className="text-xl">
+            <h2 id="itinerary-heading" className="text-card">
               The day, hour by hour
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-charcoal/75">
@@ -314,7 +320,7 @@ export function TripDetailPage() {
           </section>
 
           <section id="included" className="mt-8 scroll-mt-24" aria-labelledby="included-heading">
-            <h2 id="included-heading" className="text-xl">
+            <h2 id="included-heading" className="text-card">
               What your seat covers
             </h2>
             <div className="mt-4">
@@ -350,7 +356,7 @@ export function TripDetailPage() {
           </section>
 
           <section className="mt-8" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="text-xl">
+            <h2 id="faq-heading" className="text-card">
               Questions people actually ask
             </h2>
             <div className="mt-4">
@@ -382,13 +388,13 @@ export function TripDetailPage() {
         <div className="fixed inset-x-0 bottom-[calc(3.75rem+env(safe-area-inset-bottom))] z-40 border-t border-line bg-white/95 px-4 py-2.5 backdrop-blur-md lg:hidden">
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-forest">
+              <p className="text-sm font-semibold text-forest">
                 {soldOut && kind === 'shared'
                   ? 'Car full'
                   : `${formatPrice(quote.dueToday)} due today`}
               </p>
-              <p className={`truncate text-xs ${left === 1 ? 'text-coral-dark' : 'text-sage'}`}>
-                {soldOut ? 'Waitlist open' : `${departure.claimedSeats}/3 claimed · ${left} left`}
+              <p className={`text-xs ${left === 1 ? 'text-coral-dark' : 'text-sage'}`}>
+                {soldOut ? 'Waitlist open' : `${departure.claimedSeats} of 3 claimed`}
               </p>
             </div>
             <Link
@@ -399,7 +405,11 @@ export function TripDetailPage() {
               }
               className={`btn min-h-11 shrink-0 ${status === 'almost_full' ? 'btn-primary' : 'btn-forest'} px-4 text-sm`}
             >
-              {soldOut && kind === 'shared' ? 'Join waitlist' : primaryCtaLabel(departure, kind)}
+              {soldOut && kind === 'shared'
+                ? 'Join waitlist'
+                : kind === 'private'
+                  ? 'Book whole car'
+                  : shortCtaLabel(departure)}
             </Link>
           </div>
         </div>

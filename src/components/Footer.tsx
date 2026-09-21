@@ -25,7 +25,7 @@ const columns = [
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-line bg-forest text-sand/85">
+    <footer className="mt-16 border-t border-line bg-forest text-sand/85 pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:mt-20 md:pb-0">
       <div className="wrap grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
           <div className="[&_a]:text-sand">

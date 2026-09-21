@@ -63,7 +63,7 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private car and all transport within Johor',
+      'Car and all transport within Johor',
       'Your local host, who drives and guides the whole route',
       'Pick-up and drop-off at JB CIQ',
       'The curated itinerary and table reservations',
@@ -151,7 +151,7 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private car and all transport within Johor',
+      'Car and all transport within Johor',
       'Your local host, who drives and guides the whole route',
       'Pick-up and drop-off at JB CIQ',
       'The curated itinerary, circuit slots and massage booked ahead',
@@ -239,7 +239,7 @@ export const tours: Tour[] = [
       },
     ],
     included: [
-      'Private car and all transport within Johor',
+      'Car and all transport within Johor',
       'Your local host, who drives and guides the whole route',
       'Pick-up and drop-off at JB CIQ',
       'The curated itinerary and a guided walk through Kukup',

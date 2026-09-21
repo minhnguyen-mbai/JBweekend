@@ -21,7 +21,7 @@ export function MobileNav() {
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition ${
+                `flex min-h-14 flex-col items-center justify-center gap-1 text-xs font-semibold transition ${
                   isActive ? 'text-coral' : 'text-sage'
                 }`
               }

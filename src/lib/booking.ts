@@ -172,6 +172,14 @@ export function seatHeadline(departure: Departure): string {
   }
 }
 
+/** Compact label for narrow cards, where the full sentence does not fit. */
+export function shortCtaLabel(departure: Departure): string {
+  const status = deriveStatus(departure)
+  if (status === 'confirmed' || status === 'private') return 'Join waitlist'
+  if (status === 'almost_full') return 'Claim last seat'
+  return 'Claim a seat'
+}
+
 /** The label on the main call to action, which changes with the seat count. */
 export function primaryCtaLabel(departure: Departure, kind: BookingKind = 'shared'): string {
   if (kind === 'private') return 'Book the whole car'

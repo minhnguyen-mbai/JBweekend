@@ -64,8 +64,8 @@ export function TripsPage() {
     <div className="wrap py-10 sm:py-12">
       <header className="max-w-2xl">
         <p className="eyebrow">Upcoming departures</p>
-        <h1 className="mt-2 text-3xl sm:text-4xl">Explore trips</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
+        <h1 className="mt-2 text-page">Explore trips</h1>
+        <p className="copy mt-3 text-charcoal/75">
           Every car has three traveller seats and one local host. Filter by the weekend you are free,
           then claim a seat — or request a date if none of these fit.
         </p>
@@ -73,40 +73,43 @@ export function TripsPage() {
 
       {/* ---------------- Search, filters, sort ---------------- */}
       <div className="mt-8 space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search
-              className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-sage"
-              aria-hidden="true"
-            />
+        {/* Stacked and full width on mobile; side by side once there is room. */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="sm:flex-1">
             <label htmlFor="trip-search" className="sr-only">
               Search trips by name, tag or date
             </label>
-            <input
-              id="trip-search"
-              type="search"
-              value={query}
-              placeholder="Search trips, tags or dates"
-              onChange={(e) =>
-                update((next) => {
-                  const value = e.target.value
-                  if (value) next.set('q', value)
-                  else next.delete('q')
-                })
-              }
-              className="field pl-10"
-            />
+            <div className="relative">
+              <Search
+                className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-sage"
+                aria-hidden="true"
+              />
+              <input
+                id="trip-search"
+                type="search"
+                value={query}
+                placeholder="Search trips, tags or dates"
+                onChange={(e) =>
+                  update((next) => {
+                    const value = e.target.value
+                    if (value) next.set('q', value)
+                    else next.delete('q')
+                  })
+                }
+                className="field min-h-12 w-full pl-10"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="size-4 shrink-0 text-sage" aria-hidden="true" />
-            <label htmlFor="trip-sort" className="sr-only">
-              Sort departures
+          <div className="sm:w-56">
+            <label htmlFor="trip-sort" className="label flex items-center gap-1.5">
+              <SlidersHorizontal className="size-3.5 shrink-0 text-sage" aria-hidden="true" />
+              Sort by
             </label>
             <select
               id="trip-sort"
               value={sort}
               onChange={(e) => update((next) => next.set('sort', e.target.value))}
-              className="field sm:w-52"
+              className="field min-h-12 w-full"
             >
               {sortOptions.map((option) => (
                 <option key={option.key} value={option.key}>
@@ -139,7 +142,7 @@ export function TripsPage() {
           )}
         </ChipRow>
 
-        <p className="text-sm text-sage" role="status" aria-live="polite">
+        <p className="copy-sm text-sage" role="status" aria-live="polite">
           {loading
             ? 'Loading departures…'
             : `${results.length} departure${results.length === 1 ? '' : 's'}${

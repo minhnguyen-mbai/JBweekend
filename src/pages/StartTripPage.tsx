@@ -147,7 +147,7 @@ export function StartTripPage() {
               <p className="text-xs font-semibold uppercase tracking-wider text-sand/80">
                 {formatDateLong(created.departure.date)}
               </p>
-              <h1 className="mt-1 text-2xl text-sand sm:text-3xl">
+              <h1 className="mt-1 text-page text-sand">
                 Your date is live. {left === 1 ? 'One more seat' : `${left} more seats`} to go.
               </h1>
             </div>
@@ -252,8 +252,8 @@ export function StartTripPage() {
           <Sparkles className="size-4 text-gold" aria-hidden="true" />
           Request a date
         </p>
-        <h1 className="mt-2 text-3xl sm:text-4xl">Pick the date. We will find the other two.</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
+        <h1 className="mt-2 text-page">Pick the date. We will find the other two.</h1>
+        <p className="mt-3 copy text-charcoal/75">
           Requesting a date lists that car publicly so other travellers can claim the remaining
           seats. You hold your own seats with the same refundable{' '}
           {formatPrice(DEPOSIT_PER_SEAT)} deposit per seat as everyone else.

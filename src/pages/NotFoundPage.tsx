@@ -7,7 +7,7 @@ export function NotFoundPage() {
       <span className="grid size-14 place-items-center rounded-full bg-forest-soft text-forest">
         <Compass className="size-7" aria-hidden="true" />
       </span>
-      <h1 className="mt-5 text-3xl">That road does not go anywhere</h1>
+      <h1 className="mt-5 text-page">That road does not go anywhere</h1>
       <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
         The page you are looking for is not here. The departures board is the best place to start —
         three routes, a handful of dates, three seats each.

@@ -23,6 +23,24 @@
   --font-display: 'Fraunces', ui-serif, Georgia, 'Times New Roman', serif;
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
+  /* Supporting labels never drop below 14px, so the smallest utility is raised
+     rather than hunting down ~50 call sites. */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.45;
+
+  /* Fluid type scale. Every heading uses one of these rather than a hard-coded
+     size, so 320px and 1440px stay in proportion without per-page overrides. */
+  --text-hero: clamp(2.5rem, 1.6rem + 4.2vw, 3.75rem);
+  --text-hero--line-height: 1.05;
+  --text-page: clamp(2.125rem, 1.7rem + 2vw, 2.75rem);
+  --text-page--line-height: 1.1;
+  --text-section: clamp(1.75rem, 1.5rem + 1.2vw, 2rem);
+  --text-section--line-height: 1.15;
+  --text-card: clamp(1.375rem, 1.25rem + 0.6vw, 1.5rem);
+  --text-card--line-height: 1.25;
+  --text-copy: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --text-copy--line-height: 1.6;
+
   /* ---- Radii & elevation ---- */
   --radius-card: 1.125rem;
   --shadow-soft: 0 1px 2px rgb(29 36 32 / 0.04), 0 8px 24px -12px rgb(29 36 32 / 0.16);
@@ -74,6 +92,23 @@
 }
 
 @layer base {
+  :root {
+    /* 16px to 430px; 20px only once the viewport comfortably supports it. */
+    --wrap-gutter: 1rem;
+  }
+
+  @media (min-width: 431px) {
+    :root {
+      --wrap-gutter: 1.25rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --wrap-gutter: 2rem;
+    }
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
@@ -110,6 +145,25 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Grid and flex children default to min-content width, which is what pushes
+     long dates, emails and prices past the viewport edge. */
+  .grid > *,
+  .flex > * {
+    min-width: 0;
+  }
+
+  /* Long unbroken strings (emails, share links, prices) wrap instead of overflowing. */
+  p,
+  dd,
+  dt,
+  li,
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+  }
+
   /* Hide scrollbars on horizontally scrolling filter rows without losing scroll. */
   .no-scrollbar {
     scrollbar-width: none;
@@ -138,13 +192,27 @@
     width: 100%;
     max-width: 78rem;
     margin-inline: auto;
-    padding-inline: 1.25rem;
+    padding-inline: var(--wrap-gutter);
   }
 
-  @media (min-width: 1024px) {
-    .wrap {
-      padding-inline: 2rem;
-    }
+  /*
+   * Full-bleed scroll rows negate exactly the current gutter. Hard-coding -mx-5
+   * against a 16px gutter is what pushes these rows past the viewport edge.
+   */
+  .bleed {
+    margin-inline: calc(-1 * var(--wrap-gutter));
+    padding-inline: var(--wrap-gutter);
+  }
+
+  /* Body copy never drops below 16px; supporting labels never below 14px. */
+  .copy {
+    font-size: var(--text-copy);
+    line-height: var(--text-copy--line-height);
+  }
+
+  .copy-sm {
+    font-size: 0.875rem;
+    line-height: 1.55;
   }
 
   .btn {
@@ -243,16 +311,16 @@
 
   .label {
     display: block;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--color-forest);
     margin-bottom: 0.375rem;
   }
 
   .eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-sage);
   }

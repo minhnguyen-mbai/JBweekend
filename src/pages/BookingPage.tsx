@@ -142,7 +142,7 @@ export function BookingPage() {
             >
               <CheckCircle2 className="size-6" aria-hidden="true" />
             </span>
-            <h1 className={`mt-4 text-2xl sm:text-3xl ${confirmed ? 'text-sand' : ''}`}>{headline}</h1>
+            <h1 className={`mt-4 text-page ${confirmed ? 'text-sand' : ''}`}>{headline}</h1>
             <p
               className={`mx-auto mt-2 max-w-md text-sm leading-relaxed ${
                 confirmed ? 'text-sand/80' : 'text-charcoal/75'
@@ -248,7 +248,7 @@ export function BookingPage() {
 
       <header className="mt-2">
         <p className="eyebrow">{tour.title}</p>
-        <h1 className="mt-1 text-2xl sm:text-3xl">
+        <h1 className="mt-1 text-page">
           {formatDateLong(departure.date)}
         </h1>
       </header>

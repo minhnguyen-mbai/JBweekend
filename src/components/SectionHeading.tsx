@@ -22,9 +22,9 @@ export function SectionHeading({
     >
       <div className={centered ? 'max-w-2xl' : 'max-w-2xl'}>
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2 className="mt-2 text-2xl sm:text-3xl">{title}</h2>
+        <h2 className="mt-2 text-section">{title}</h2>
         {description && (
-          <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">{description}</p>
+          <p className="mt-3 copy text-charcoal/75">{description}</p>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}

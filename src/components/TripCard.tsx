@@ -3,7 +3,7 @@ import { CalendarClock, Clock } from 'lucide-react'
 import type { Departure, Tour } from '../types'
 import { TourArt } from './TourArt'
 import { StatusBadge } from './StatusBadge'
-import { deriveStatus, primaryCtaLabel, remainingSeats } from '../lib/booking'
+import { deriveStatus, remainingSeats, shortCtaLabel } from '../lib/booking'
 import { formatDateShort, formatDeadline, formatPrice } from '../lib/format'
 
 const categoryLabel: Record<Tour['category'], string> = {
@@ -46,12 +46,12 @@ export function TripCard({ departure, tour }: { departure: Departure; tour: Tour
         </p>
 
         {/* 3 — route name and category */}
-        <h3 className="mt-1 text-xl leading-snug">
+        <h3 className="mt-1 text-card">
           <Link to={href} className="transition hover:text-forest-light">
             {tour.title}
           </Link>
         </h3>
-        <p className="mt-0.5 text-xs text-sage">{categoryLabel[tour.category]}</p>
+        <p className="copy-sm mt-0.5 text-sage">{categoryLabel[tour.category]}</p>
 
         {/* 4 — seats claimed and remaining */}
         <p className="mt-3 flex items-center gap-2 text-sm">
@@ -72,28 +72,32 @@ export function TripCard({ departure, tour }: { departure: Departure; tour: Tour
         </p>
 
         {/* 5 — confirmation deadline */}
-        <p className="mt-1.5 flex items-start gap-1.5 text-xs text-sage">
+        <p className="copy-sm mt-1.5 flex items-start gap-1.5 text-sage">
           <CalendarClock className="mt-px size-3.5 shrink-0" aria-hidden="true" />
           {soldOut ? 'Confirmed — this car is going' : `Confirms by ${formatDeadline(departure.confirmationDeadline)}`}
         </p>
 
-        {/* 6 and 7 — price and action */}
-        <div className="mt-auto flex items-end justify-between gap-3 pt-4">
-          <p className="text-sm">
+        {/* 6 — price, then 7 — action. Never side by side: a long CTA and a
+            price do not fit one row at 320px. */}
+        <div className="mt-auto pt-4">
+          <p className="flex flex-wrap items-baseline gap-x-2">
             <span className="font-display text-xl font-semibold text-forest">
               {formatPrice(tour.sharedSeatPrice)}
             </span>
-            <span className="text-sage"> / seat</span>
-            <span className="mt-0.5 block text-xs text-sage">
+            <span className="copy-sm text-sage">per seat</span>
+            <span className="copy-sm w-full text-sage">
               Whole car {formatPrice(tour.privateCarPrice)}
             </span>
           </p>
           <Link
             to={href}
-            className={`btn ${status === 'almost_full' ? 'btn-primary' : 'btn-forest'} min-h-11 px-4 py-2.5 text-sm`}
+            className={`btn mt-3 w-full ${status === 'almost_full' ? 'btn-primary' : 'btn-forest'}`}
           >
-            {primaryCtaLabel(departure)}
-            <span className="sr-only"> — {tour.title}, {formatDateShort(departure.date)}</span>
+            {shortCtaLabel(departure)}
+            <span className="sr-only">
+              {' '}
+              — {tour.title}, {formatDateShort(departure.date)}
+            </span>
           </Link>
         </div>
       </div>

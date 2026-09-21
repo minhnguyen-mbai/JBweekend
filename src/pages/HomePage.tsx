@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
+  Check,
   CalendarCheck,
   Car,
   Compass,
@@ -42,7 +43,7 @@ const groupReasons = [
   },
   {
     Icon: Wallet,
-    title: 'A private car at a shared price',
+    title: 'Small-group comfort, priced per seat',
     copy: 'Take a seat instead of the whole car and the same vehicle, host and route cost a fraction.',
   },
   {
@@ -67,46 +68,51 @@ export function HomePage() {
     <>
       {/* ---------------- Hero ---------------- */}
       <section className="border-b border-line bg-sand">
-        <div className="wrap grid items-center gap-8 py-10 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:py-16">
+        <div className="wrap grid items-center gap-7 py-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:py-16">
           <div>
             <p className="eyebrow flex items-center gap-2">
-              <Sparkles className="size-4 text-gold" aria-hidden="true" />
-              Singapore → Johor · Weekend departures
+              <Sparkles className="size-4 shrink-0 text-gold" aria-hidden="true" />
+              Johor day trips · Meet at JB CIQ
             </p>
-            <h1 className="mt-3 text-[2.25rem] leading-[1.06] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 text-hero">
               Your next JB weekend already has a seat.
             </h1>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-charcoal/80">
+            <p className="copy mt-3 max-w-xl text-charcoal/80">
               Curated Johor day trips in a small car, with three traveller seats and one local host.
             </p>
-            <p className="mt-3 flex max-w-xl items-start gap-2 rounded-xl border border-line bg-white/70 p-3 text-sm leading-relaxed text-charcoal/80">
+            <p className="copy-sm mt-3 flex max-w-xl items-start gap-2 rounded-xl border border-line bg-white/70 p-3 text-charcoal/80">
               <MapPin className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden="true" />
               Cross the border independently. We pick you up and drop you off at JB CIQ.
             </p>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link to="/trips" className="btn btn-primary px-6 text-base">
+            <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+              <Link to="/trips" className="btn btn-primary w-full px-6 text-base sm:w-auto">
                 View available departures
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
-              <Link to="/start-trip" className="btn btn-outline px-6 text-base">
+              <Link to="/start-trip" className="btn btn-outline w-full px-6 text-base sm:w-auto">
                 Request a date
               </Link>
             </div>
 
-            <p className="mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-sage">
-              <span>Three traveller seats</span>
-              <span aria-hidden="true">·</span>
-              <span>Private car and local host included</span>
-              <span aria-hidden="true">·</span>
-              <span>Meets at JB CIQ</span>
-            </p>
+            <ul className="copy-sm mt-5 grid gap-1.5 font-medium text-sage sm:flex sm:flex-wrap sm:gap-x-5">
+              {[
+                'Three traveller seats',
+                'Small-group car transport and local host included',
+                'Meets at JB CIQ',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <Check className="mt-0.5 size-4 shrink-0 text-forest" aria-hidden="true" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
           {featured && (
             <div>
               <div className="overflow-hidden rounded-[1.25rem] border border-line shadow-lift">
-                <div className="relative aspect-[16/10]">
+                <div className="relative aspect-[16/9] sm:aspect-[16/10]">
                   <TourArt
                     image={featured.tour.heroImage}
                     title={`${featured.tour.title} — ${featured.tour.hook}`}
@@ -158,7 +164,7 @@ export function HomePage() {
           }
         />
 
-        <div className="no-scrollbar -mx-5 mt-5 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
+        <div className="no-scrollbar bleed mt-5 flex gap-2 overflow-x-auto pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
           {quickFilters.map((f) => (
             <Link
               key={f.label}
@@ -200,7 +206,7 @@ export function HomePage() {
               {
                 Icon: CalendarCheck,
                 title: 'Hold your seat for S$30',
-                copy: 'A refundable deposit per seat. Book the last seats instead and the full fare is due, because the trip confirms on the spot.',
+                copy: 'A refundable deposit per seat. If your booking fills the remaining seats, the full fare is due because the trip confirms immediately.',
               },
               {
                 Icon: Car,
@@ -219,13 +225,13 @@ export function HomePage() {
             ))}
           </ol>
 
-          <div className="mt-5 flex flex-col gap-3 rounded-[1.25rem] border border-gold/30 bg-gold-soft p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-2xl text-sm leading-relaxed text-charcoal/80">
+          <div className="mt-5 flex flex-col gap-4 rounded-[1.25rem] border border-gold/30 bg-gold-soft p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="copy-sm max-w-2xl text-charcoal/80">
               <strong className="text-forest">If the car does not fill:</strong> confirmation closes
               two days before departure. You then choose a full refund, moving your deposit to
               another date, or taking the whole car at the private rate.
             </p>
-            <Link to="/safety" className="btn btn-forest shrink-0">
+            <Link to="/safety" className="btn btn-forest w-full shrink-0 sm:w-auto">
               Read the policies
             </Link>
           </div>
@@ -272,10 +278,10 @@ export function HomePage() {
         <div className="wrap py-10 sm:py-14">
           <div className="max-w-2xl">
             <p className="eyebrow text-gold">Why three seats</p>
-            <h2 className="mt-2 text-2xl text-sand sm:text-3xl">
+            <h2 className="mt-2 text-section text-sand">
               Small enough to stay personal, large enough to be affordable
             </h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-sand/80">
+            <p className="mt-3 copy text-sand/80">
               One car holds four people. Your host takes the wheel, which leaves exactly three seats
               to sell.
             </p>
@@ -321,7 +327,7 @@ export function HomePage() {
             className="absolute inset-0 size-full object-cover"
           />
           <div className="relative bg-charcoal/72 px-5 py-12 text-center sm:px-10">
-            <h2 className="mx-auto max-w-2xl text-2xl text-sand sm:text-4xl">
+            <h2 className="mx-auto max-w-2xl text-section text-sand">
               Three seats. One local host. A different side of Johor.
             </h2>
             <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">

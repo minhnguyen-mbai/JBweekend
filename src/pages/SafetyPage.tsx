@@ -84,10 +84,10 @@ export function SafetyPage() {
       <section className="border-b border-line bg-forest text-sand">
         <div className="wrap py-10 sm:py-14">
           <p className="eyebrow text-gold">Trust and safety</p>
-          <h1 className="mt-3 max-w-3xl text-3xl text-sand sm:text-5xl">
+          <h1 className="mt-3 max-w-3xl text-page text-sand">
             Getting into a car with strangers should feel considered, not brave.
           </h1>
-          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-sand/80">
+          <p className="mt-4 max-w-2xl copy text-sand/80">
             JB Weekend is small on purpose: one host, three travellers, one fixed meeting point and
             a written set of rules everyone agrees to. Below is what we actually do today — and,
             just as plainly, what we are still building.
@@ -118,8 +118,8 @@ export function SafetyPage() {
         <div className="wrap grid gap-7 py-10 sm:py-14 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <p className="eyebrow">Agreed at checkout</p>
-            <h2 className="mt-2 text-2xl sm:text-3xl">Traveller code of conduct</h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-charcoal/75">
+            <h2 className="mt-2 text-section">Traveller code of conduct</h2>
+            <p className="mt-3 copy text-charcoal/75">
               Confirming a booking means agreeing to this, and every host agrees to the same
               standard. Breaking it ends the trip and the account.
             </p>

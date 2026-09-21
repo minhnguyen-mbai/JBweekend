@@ -61,8 +61,8 @@ export function MyTripsPage() {
     <div className="wrap py-8 sm:py-12">
       <header className="max-w-2xl">
         <p className="eyebrow">Your bookings</p>
-        <h1 className="mt-2 text-3xl sm:text-4xl">My trips</h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-charcoal/75">
+        <h1 className="mt-2 text-page">My trips</h1>
+        <p className="mt-2 copy text-charcoal/75">
           Every seat you hold, what is owed, and exactly when each car needs to fill.
         </p>
       </header>
