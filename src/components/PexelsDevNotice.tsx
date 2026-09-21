@@ -37,7 +37,7 @@ export function PexelsDevNotice() {
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          className="shrink-0 font-semibold text-forest underline underline-offset-2"
+          className="inline-flex min-h-11 shrink-0 items-center font-semibold text-forest underline underline-offset-2"
         >
           Dismiss
         </button>

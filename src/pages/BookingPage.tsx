@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -19,6 +19,7 @@ import type { BookingKind } from '../lib/booking'
 import { quoteFor, remainingSeats } from '../lib/booking'
 import { formatDateLong, formatDeadline, formatPrice } from '../lib/format'
 import { validateTraveller } from '../lib/validation'
+import { track, wasWeatherViewed } from '../lib/analytics'
 import type { FormErrors } from '../lib/validation'
 import { copyText } from '../lib/clipboard'
 import { buildShareLink } from '../lib/share'
@@ -57,6 +58,15 @@ export function BookingPage() {
   const [processing, setProcessing] = useState(false)
   const [completed, setCompleted] = useState<Booking | null>(null)
   const [shareOpen, setShareOpen] = useState(false)
+
+  useEffect(() => {
+    if (!departure || !tour) return
+    if (!wasWeatherViewed(tour.slug, departure.date)) return
+    track('booking_continued_after_weather_view', {
+      tripId: tour.slug,
+      tripDate: departure.date,
+    })
+  }, [departure, tour])
 
   const resultDeparture = useMemo(
     () => (completed ? state.departures.find((d) => d.id === completed.departureId) : undefined),

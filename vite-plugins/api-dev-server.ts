@@ -30,6 +30,7 @@ export function apiDevServer(): Plugin {
           const mod = (await server.ssrLoadModule('/api/_lib/handler.ts')) as {
             handleHealth: (e: Record<string, string | undefined>) => ApiResult
             handleTripImages: (u: URL, e: Record<string, string | undefined>) => Promise<ApiResult>
+            handleWeather: (u: URL, e: Record<string, string | undefined>) => Promise<ApiResult>
           }
 
           let result: ApiResult
@@ -37,6 +38,8 @@ export function apiDevServer(): Plugin {
             result = mod.handleHealth(serverEnv)
           } else if (url.pathname === '/api/trip-images') {
             result = await mod.handleTripImages(url, serverEnv)
+          } else if (url.pathname === '/api/weather') {
+            result = await mod.handleWeather(url, serverEnv)
           } else {
             result = {
               status: 404,

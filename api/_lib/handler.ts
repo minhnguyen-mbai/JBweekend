@@ -2,6 +2,10 @@ import { TtlCache } from './cache.js'
 import { getRouteConfig, allowedRoutes } from './routes.js'
 import { ProviderError, fetchRoutePhotos } from './pexels.js'
 import type { NormalizedPhoto } from './pexels.js'
+import { allowedTripIds, getTripWeatherConfig } from './weather/trips.js'
+import { getTripWeather, isValidDate } from './weather/service.js'
+import { WeatherProviderError } from './weather/official.js'
+import { CACHE_TTL_MS } from './weather/thresholds.js'
 
 export type ApiResult = {
   status: number
@@ -98,6 +102,59 @@ export async function handleTripImages(
       error: 'provider_error',
       message: 'The image provider could not be reached.',
       route: config.slug,
+    })
+  }
+}
+
+/**
+ * GET /api/weather?tripId=<id>&date=YYYY-MM-DD
+ *
+ * Trip id and date are validated against the server-side allowlist; no
+ * coordinates, provider names or URLs are ever accepted from the client.
+ */
+export async function handleWeather(
+  url: URL,
+  env: Record<string, string | undefined>,
+): Promise<ApiResult> {
+  const json = (status: number, body: unknown, cacheControl = NO_STORE): ApiResult => ({
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': cacheControl },
+    body,
+  })
+
+  const tripId = url.searchParams.get('tripId')
+  if (!getTripWeatherConfig(tripId)) {
+    return json(400, {
+      error: 'invalid_trip',
+      message: 'Unknown trip. Provide one of the supported trip ids.',
+      allowedTripIds,
+    })
+  }
+
+  const date = url.searchParams.get('date') ?? ''
+  if (!isValidDate(date)) {
+    return json(400, {
+      error: 'invalid_date',
+      message: 'Provide a trip date as YYYY-MM-DD.',
+    })
+  }
+
+  try {
+    const payload = await getTripWeather(tripId as string, date, env)
+    const seconds = Math.floor(CACHE_TTL_MS.warning / 1000)
+    return json(
+      200,
+      payload,
+      `public, max-age=0, s-maxage=${seconds}, stale-while-revalidate=${seconds * 4}`,
+    )
+  } catch (error) {
+    // Upstream detail is never forwarded to the browser.
+    const code = error instanceof WeatherProviderError ? error.code : 'provider_error'
+    return json(503, {
+      error: code,
+      message: 'Live weather is temporarily unavailable.',
+      tripId,
+      tripDate: date,
     })
   }
 }

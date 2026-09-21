@@ -23,6 +23,7 @@ import { deriveStatus, quoteFor, remainingSeats, shortCtaLabel } from '../lib/bo
 import { formatDateLong, formatDateShort, formatDeadline, formatPrice } from '../lib/format'
 import { PexelsTripImage } from '../components/PexelsTripImage'
 import { RouteGallery } from '../components/RouteGallery'
+import { TripWeatherSection } from '../components/TripWeatherSection'
 import { StatusBadge } from '../components/StatusBadge'
 import { TravellerChip } from '../components/TravellerAvatars'
 import { HostCard } from '../components/HostCard'
@@ -216,6 +217,8 @@ export function TripDetailPage() {
                   </p>
                 </div>
               </section>
+
+              <TripWeatherSection tripId={tour.slug} date={departure.date} className="mt-6" />
 
               {/* ---------------- Other dates ---------------- */}
               <section className="mt-6" aria-labelledby="dates-heading">

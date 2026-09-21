@@ -3,6 +3,7 @@ import { CalendarClock, Clock } from 'lucide-react'
 import type { Departure, Tour } from '../types'
 import { PexelsTripImage } from './PexelsTripImage'
 import { useTripImages } from '../lib/useTripImages'
+import { TripWeatherLine } from './TripWeatherLine'
 import { StatusBadge } from './StatusBadge'
 import { deriveStatus, remainingSeats, shortCtaLabel } from '../lib/booking'
 import { formatDateShort, formatDeadline, formatPrice } from '../lib/format'
@@ -95,6 +96,8 @@ export function TripCard({
           <CalendarClock className="mt-px size-3.5 shrink-0" aria-hidden="true" />
           {soldOut ? 'Confirmed — this car is going' : `Confirms by ${formatDeadline(departure.confirmationDeadline)}`}
         </p>
+
+        <TripWeatherLine tripId={tour.slug} date={departure.date} />
 
         {/* 6 — price, then 7 — action. Never side by side: a long CTA and a
             price do not fit one row at 320px. */}
